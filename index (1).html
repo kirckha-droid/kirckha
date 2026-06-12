@@ -1,0 +1,3031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kirckha — AI-Powered Creator Marketing</title>
+  <meta name="description" content="Kirckha helps content creators grow and monetize their brands through AI-powered marketing." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ══════════════════════════════
+       TOKENS
+    ══════════════════════════════ */
+    :root {
+      --green:        #3A6647;
+      --green-l:      #4f8460;
+      --green-d:      #243e2c;
+      --cream:        #F0E8DC;
+      --cream-d:      #c8bfb3;
+      --cream-dim:    rgba(240,232,220,0.10);
+      --glow:         rgba(58,102,71,0.40);
+      --bg:           #070C08;
+      --bg2:          rgba(8,14,9,0.82);
+      --bg3:          rgba(13,21,14,0.88);
+      --border:       rgba(240,232,220,0.09);
+      --border-g:     rgba(58,102,71,0.28);
+      --ease:         cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--bg); color:var(--cream);
+      font-family:'Inter',sans-serif; font-weight:300;
+      line-height:1.7; overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    a { text-decoration:none; color:inherit; }
+    img { max-width:100%; display:block; }
+    ::-webkit-scrollbar { width:3px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--green); border-radius:2px; }
+
+    /* ── AMBIENT ── */
+    .ambient { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+    .amb-blob { position:absolute; border-radius:50%; filter:blur(88px); animation:blobDrift 22s ease-in-out infinite alternate; }
+    .amb-1 { width:900px; height:720px; top:-18%; right:-18%;
+      background:radial-gradient(ellipse, rgba(58,102,71,0.20) 0%, rgba(36,62,44,0.08) 50%, transparent 75%); animation-duration:24s; }
+    .amb-2 { width:700px; height:620px; bottom:-18%; left:-14%;
+      background:radial-gradient(ellipse, rgba(58,102,71,0.15) 0%, transparent 70%); animation-duration:30s; animation-delay:-9s; }
+    .amb-3 { width:500px; height:500px; top:38%; left:26%;
+      background:radial-gradient(ellipse, rgba(240,232,220,0.04) 0%, transparent 70%); animation-duration:17s; animation-delay:-4s; }
+    .amb-4 { width:380px; height:340px; top:62%; right:12%;
+      background:radial-gradient(ellipse, rgba(58,102,71,0.10) 0%, transparent 70%); animation-duration:20s; animation-delay:-13s; }
+    @keyframes blobDrift {
+      0%   { transform:translate(0,0)       scale(1)    rotate(0deg);  }
+      33%  { transform:translate(28px,-22px) scale(1.06) rotate(4deg);  }
+      66%  { transform:translate(-14px,34px) scale(0.96) rotate(-3deg); }
+      100% { transform:translate(18px,14px)  scale(1.04) rotate(7deg);  }
+    }
+    .grain { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.042;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size:180px 180px; }
+    nav, main, footer { position:relative; z-index:2; }
+
+    /* ── LAYOUT ── */
+    .container { max-width:1220px; margin:0 auto; padding:0 36px; }
+
+    /* ── UTILS ── */
+    .tag {
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:0.67rem; font-weight:500; letter-spacing:0.24em; text-transform:uppercase;
+      color:var(--cream-d); margin-bottom:20px;
+    }
+    .tag::before { content:''; width:22px; height:1px; background:var(--cream-d); }
+    .tag.green { color:var(--green-l); }
+    .tag.green::before { background:var(--green-l); }
+    .tag.centered { justify-content:center; }
+    .tag.centered::before { display:none; }
+    .tag.centered::after { content:''; width:22px; height:1px; background:currentColor; }
+
+    .display {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.8rem,5vw,4.4rem);
+      font-weight:300; line-height:1.07; letter-spacing:-0.022em;
+      color:var(--cream);
+    }
+    .display em { font-style:italic; color:var(--green-l); }
+
+    .btn {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:13px 30px; border-radius:50px;
+      font-size:0.78rem; font-weight:500; letter-spacing:0.09em; text-transform:uppercase;
+      cursor:pointer; border:none; transition:all 0.35s var(--ease); font-family:'Inter',sans-serif;
+    }
+    .btn-cream { background:var(--cream); color:var(--green-d); }
+    .btn-cream:hover { background:#fff; transform:translateY(-2px); box-shadow:0 14px 38px rgba(240,232,220,0.14); }
+    .btn-green { background:var(--green); color:var(--cream); }
+    .btn-green:hover { background:var(--green-l); transform:translateY(-2px); box-shadow:0 14px 38px var(--glow); }
+    .btn-ghost { background:transparent; color:var(--cream); border:1px solid var(--border); }
+    .btn-ghost:hover { border-color:rgba(240,232,220,0.38); transform:translateY(-2px); }
+    .btn svg { transition:transform 0.3s; flex-shrink:0; }
+    .btn:hover svg { transform:translateX(4px); }
+
+    /* reveal */
+    .r { opacity:0; transform:translateY(32px); transition:opacity 0.85s var(--ease), transform 0.85s var(--ease); }
+    .r.v { opacity:1; transform:translateY(0); }
+    .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+    .d4{transition-delay:.32s}.d5{transition-delay:.40s}.d6{transition-delay:.48s}
+
+    /* ══════════════════════════════
+       NAVBAR
+    ══════════════════════════════ */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:900;
+      padding:22px 0;
+      transition:background 0.5s, padding 0.4s, backdrop-filter 0.5s;
+    }
+    nav.scrolled {
+      background:rgba(7,12,8,0.92);
+      backdrop-filter:blur(26px); -webkit-backdrop-filter:blur(26px);
+      padding:14px 0; border-bottom:1px solid var(--border);
+    }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo { display:flex; align-items:center; gap:12px; }
+    .nav-logo-svg { width:44px; height:44px; }
+    .nav-wordmark {
+      font-family:'Cormorant Garamond',serif; font-size:1.12rem; font-weight:600;
+      letter-spacing:0.12em; text-transform:uppercase; color:var(--cream);
+    }
+    .nav-wordmark small {
+      display:block; font-family:'Inter',sans-serif; font-size:0.52rem;
+      font-weight:400; letter-spacing:0.24em; color:rgba(240,232,220,0.38); margin-top:-2px;
+    }
+    .nav-links { display:flex; align-items:center; gap:34px; list-style:none; }
+    .nav-links a {
+      font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:rgba(240,232,220,0.52); transition:color 0.3s; position:relative;
+    }
+    .nav-links a::after {
+      content:''; position:absolute; bottom:-4px; left:0; right:0; height:1px;
+      background:var(--cream); transform:scaleX(0); transform-origin:left; transition:transform 0.3s;
+    }
+    .nav-links a:hover { color:var(--cream); }
+    .nav-links a:hover::after { transform:scaleX(1); }
+    .nav-book {
+      background:var(--green); color:var(--cream) !important;
+      padding:10px 22px; border-radius:50px;
+      font-size:0.72rem !important; font-weight:500; letter-spacing:0.08em;
+      transition:background 0.3s, transform 0.2s !important;
+      display:flex; align-items:center; gap:7px;
+    }
+    .nav-book:hover { background:var(--green-l) !important; transform:translateY(-1px); }
+    .nav-book::after { display:none !important; }
+
+    .nav-burger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .nav-burger span { display:block; width:22px; height:1.5px; background:var(--cream); transition:all 0.35s var(--ease); }
+    .nav-burger.open span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+    .nav-burger.open span:nth-child(2) { opacity:0; }
+    .nav-burger.open span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
+
+    .mob-menu {
+      display:none; position:fixed; inset:0; background:rgba(7,12,8,0.98);
+      z-index:899; flex-direction:column; align-items:center; justify-content:center;
+      gap:44px; opacity:0; pointer-events:none; transition:opacity 0.4s;
+    }
+    .mob-menu.open { display:flex; opacity:1; pointer-events:all; }
+    .mob-menu a {
+      font-family:'Cormorant Garamond',serif; font-size:2.8rem; font-weight:300;
+      color:var(--cream); transition:color 0.3s; letter-spacing:0.04em;
+    }
+    .mob-menu a:hover { color:var(--green-l); }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    #hero {
+      position:relative; min-height:100vh;
+      display:flex; align-items:center;
+      padding:140px 0 100px; overflow:hidden;
+    }
+    .hero-grid-bg {
+      position:absolute; inset:0; pointer-events:none; z-index:1;
+      background-image:
+        linear-gradient(rgba(240,232,220,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,232,220,0.028) 1px, transparent 1px);
+      background-size:64px 64px;
+      mask-image:radial-gradient(ellipse 72% 62% at 50% 40%, black 30%, transparent 100%);
+    }
+    .hero-inner {
+      position:relative; z-index:2; width:100%;
+      display:flex; flex-direction:column; align-items:center; text-align:center;
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(240,232,220,0.07); border:1px solid rgba(240,232,220,0.15);
+      border-radius:50px; padding:7px 18px;
+      font-size:0.67rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--cream-d);
+      margin-bottom:32px; animation:fadeDown 0.9s var(--ease) 0.2s both;
+    }
+    .badge-dot { width:5px; height:5px; background:var(--green-l); border-radius:50%; animation:pulse 2s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.65)} }
+
+    .hero-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(4rem,9vw,8.2rem);
+      font-weight:300; line-height:0.92; letter-spacing:-0.03em;
+      color:var(--cream); margin-bottom:28px;
+    }
+    .hero-title .line { display:block; overflow:hidden; }
+    .hero-title .li { display:block; animation:slideUp 1s var(--ease) both; }
+    .hero-title .line:nth-child(1) .li { animation-delay:.3s; }
+    .hero-title .line:nth-child(2) .li { animation-delay:.46s; }
+    .hero-title .line:nth-child(3) .li { animation-delay:.62s; }
+    @keyframes slideUp { from{transform:translateY(110%);opacity:0} to{transform:translateY(0);opacity:1} }
+    .hero-title em { font-style:italic; color:var(--green-l); }
+    .hero-title .stroke { -webkit-text-stroke:1px rgba(240,232,220,0.22); color:transparent; }
+
+    .hero-sub {
+      font-size:1.02rem; color:rgba(240,232,220,0.58); max-width:500px;
+      line-height:1.82; margin-bottom:46px; animation:fadeUp 1s var(--ease) 0.85s both;
+    }
+    .hero-actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:center; animation:fadeUp 1s var(--ease) 1.0s both; }
+    .live-pill {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(58,102,71,0.13); border:1px solid rgba(58,102,71,0.28);
+      border-radius:50px; padding:4px 12px;
+      font-size:0.68rem; color:rgba(240,232,220,0.55);
+      letter-spacing:0.04em; margin-top:16px; margin-bottom:20px;
+      animation:fadeUp 1s var(--ease) 1.2s both;
+      backdrop-filter:blur(8px);
+    }
+    .live-dot {
+      width:6px; height:6px; border-radius:50%; background:#4ade80; flex-shrink:0;
+      box-shadow:0 0 5px rgba(74,222,128,0.7);
+      animation:livePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
+
+    /* pulsing ring on primary CTA */
+    .btn-primary-pulse { position:relative; }
+    .btn-primary-pulse::before {
+      content:''; position:absolute; inset:-5px; border-radius:50px;
+      border:1px solid rgba(58,102,71,0.45);
+      animation:ringPulse 2.6s ease-out infinite; pointer-events:none;
+    }
+    @keyframes ringPulse { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(1.14);opacity:0} }
+
+    .hero-stats {
+      display:flex; align-items:center; gap:40px; flex-wrap:wrap; justify-content:center;
+      margin-top:64px; animation:fadeUp 1s var(--ease) 1.2s both;
+    }
+    .hero-stat-divider { width:1px; height:36px; background:var(--border); }
+    .hero-stat-val {
+      font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600;
+      color:var(--cream); line-height:1;
+    }
+    .hero-stat-val .acc { color:var(--green-l); }
+    .hero-stat-label { font-size:0.7rem; color:rgba(240,232,220,0.38); letter-spacing:0.08em; margin-top:3px; }
+
+    .hero-scroll {
+      position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      color:rgba(240,232,220,0.32); font-size:0.6rem; letter-spacing:0.24em; text-transform:uppercase;
+      animation:fadeIn 1s 1.5s both;
+    }
+    .scroll-line { position:relative; width:1px; height:54px; background:rgba(240,232,220,0.10); overflow:hidden; }
+    .scroll-line::after {
+      content:''; position:absolute; top:0; left:0; width:100%; height:40%;
+      background:linear-gradient(to bottom, transparent, rgba(240,232,220,0.7), transparent);
+      animation:scrollFlow 2.2s cubic-bezier(0.4,0,0.2,1) infinite;
+    }
+    @keyframes scrollFlow { 0%{transform:translateY(-100%)} 100%{transform:translateY(280%)} }
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(26px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+
+    /* ══════════════════════════════
+       MARQUEE
+    ══════════════════════════════ */
+    .marquee-wrap {
+      position:relative; z-index:2; padding:24px 0; overflow:hidden;
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    }
+    .mtrack { display:flex; gap:52px; width:max-content; animation:marquee 24s linear infinite; }
+    .mitem { display:flex; align-items:center; gap:16px;
+      font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(240,232,220,0.32); }
+    .mdot { width:4px; height:4px; background:var(--green); border-radius:50%; flex-shrink:0; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ══════════════════════════════
+       STATS BAND
+    ══════════════════════════════ */
+    .stats-band { padding:88px 0; background:var(--bg2); border-bottom:1px solid var(--border); }
+    .stats-grid {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border:1px solid var(--border); border-radius:22px; overflow:hidden;
+    }
+    .stat-cell {
+      padding:44px 34px; border-right:1px solid var(--border);
+      transition:background 0.4s;
+    }
+    .stat-cell:last-child { border-right:none; }
+    .stat-cell:hover { background:rgba(240,232,220,0.025); }
+    .stat-val {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.6rem,4vw,3.8rem); font-weight:600; line-height:1; color:var(--cream);
+    }
+    .stat-val .acc { color:var(--green-l); }
+    .stat-label { font-size:0.76rem; color:rgba(240,232,220,0.38); margin-top:8px; line-height:1.5; }
+
+    /* ══════════════════════════════
+       ABOUT
+    ══════════════════════════════ */
+    #about { padding:130px 0; }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+    .about-text p { color:rgba(240,232,220,0.58); font-size:0.97rem; line-height:1.88; margin-bottom:22px; }
+    .about-text p:last-of-type { margin-bottom:0; }
+
+    .about-card {
+      background:var(--bg3); border:1px solid var(--border); border-radius:24px;
+      padding:44px; position:relative; overflow:hidden;
+    }
+    .about-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(240,232,220,0.22), transparent);
+    }
+    .about-glow {
+      position:absolute; right:-60px; top:-60px; width:260px; height:260px;
+      background:radial-gradient(circle, rgba(58,102,71,0.20), transparent 70%);
+      border-radius:50%; pointer-events:none;
+    }
+    .about-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:32px; }
+    .about-stat-val {
+      font-family:'Cormorant Garamond',serif; font-size:2.6rem; font-weight:600;
+      color:var(--cream); line-height:1;
+    }
+    .about-stat-val .acc { color:var(--green-l); }
+    .about-stat-label { font-size:0.72rem; color:rgba(240,232,220,0.38); margin-top:3px; }
+
+    /* ══════════════════════════════
+       SERVICES
+    ══════════════════════════════ */
+    #services { padding:130px 0; background:var(--bg2); }
+    .section-hdr {
+      text-align:center; margin-bottom:72px;
+      max-width:800px; margin-left:auto; margin-right:auto;
+    }
+    .section-hdr-eyebrow {
+      display:inline-flex; align-items:center; gap:12px; margin-bottom:26px;
+    }
+    .eyebrow-line {
+      height:1px; width:44px;
+      background:linear-gradient(90deg, transparent, var(--green-l), transparent);
+    }
+    .eyebrow-label {
+      font-size:0.68rem; font-weight:500; letter-spacing:0.28em; text-transform:uppercase;
+      color:var(--green-l); background:rgba(58,102,71,0.12);
+      border:1px solid rgba(58,102,71,0.28); padding:5px 16px; border-radius:50px;
+    }
+    .section-hdr-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(3rem,5.5vw,4.8rem);
+      font-weight:300; line-height:1.06; letter-spacing:-0.025em;
+      color:var(--cream); margin-bottom:18px;
+    }
+    .section-hdr-title em { font-style:italic; color:var(--green-l); }
+    .section-hdr p { color:rgba(240,232,220,0.45); font-size:0.96rem; line-height:1.8; max-width:560px; margin:0 auto; }
+
+    .svc-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      grid-auto-rows:1fr; gap:16px;
+    }
+    .svc-card {
+      background:var(--bg); border:1px solid var(--border); border-radius:20px;
+      padding:36px 30px; position:relative; overflow:hidden;
+      min-height:280px; display:flex; flex-direction:column;
+      transition:border-color 0.4s var(--ease), transform 0.4s, box-shadow 0.4s;
+    }
+    .svc-card::before {
+      content:''; position:absolute; left:0; top:18%; bottom:18%; width:2px;
+      background:linear-gradient(to bottom, transparent, var(--green-l), transparent);
+      border-radius:2px; transform:scaleY(0); transform-origin:center;
+      transition:transform 0.45s var(--ease);
+    }
+    .svc-card::after {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse 80% 55% at 50% 0%, rgba(58,102,71,0.07), transparent 70%);
+      opacity:0; transition:opacity 0.5s;
+    }
+    .svc-card:hover { border-color:rgba(58,102,71,0.42); transform:translateY(-6px); box-shadow:0 28px 70px rgba(0,0,0,0.42); }
+    .svc-card:hover::before { transform:scaleY(1); }
+    .svc-card:hover::after { opacity:1; }
+
+    /* SVG watermark */
+    .svc-bg {
+      position:absolute; bottom:-8px; right:-8px;
+      width:155px; height:155px; pointer-events:none;
+      opacity:0.24; transition:opacity 0.4s;
+    }
+    .svc-card:hover .svc-bg { opacity:0.42; }
+
+    .svc-num {
+      position:absolute; top:22px; right:24px;
+      font-family:'Cormorant Garamond',serif; font-size:2.8rem; font-weight:300;
+      color:rgba(240,232,220,0.04); line-height:1; pointer-events:none;
+      transition:color 0.4s;
+    }
+    .svc-card:hover .svc-num { color:rgba(58,102,71,0.10); }
+
+    .svc-stat {
+      font-family:'Cormorant Garamond',serif; font-size:2.1rem; font-weight:600;
+      color:var(--cream); line-height:1; margin-bottom:4px;
+      position:relative; z-index:1;
+    }
+    .svc-stat span { color:var(--green-l); }
+    .svc-stat-label {
+      font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase;
+      color:rgba(240,232,220,0.32); margin-bottom:14px; display:block; position:relative; z-index:1;
+    }
+    .svc-card h3 {
+      font-family:'Cormorant Garamond',serif; font-size:1.52rem; font-weight:500;
+      margin-bottom:10px; line-height:1.2; color:var(--cream);
+      position:relative; z-index:1;
+    }
+    .svc-card p { font-size:0.83rem; color:rgba(240,232,220,0.44); line-height:1.75; position:relative; z-index:1; flex:1; }
+    .svc-arrow {
+      display:inline-flex; align-items:center; gap:6px; margin-top:18px;
+      font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--green-l);
+      opacity:0; transform:translateX(-10px); transition:opacity 0.32s, transform 0.32s;
+      position:relative; z-index:1;
+    }
+    .svc-card:hover .svc-arrow { opacity:1; transform:translateX(0); }
+
+    /* ══════════════════════════════
+       PROCESS
+    ══════════════════════════════ */
+    /* ══ NICHES ══════════════════════════════════════ */
+    #niches { padding:130px 0; }
+    .niches-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      margin-top:72px;
+    }
+    .niche-card {
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:linear-gradient(145deg,rgba(13,21,14,0.80),rgba(8,14,9,0.60));
+      backdrop-filter:blur(12px);
+      padding:32px 26px 28px;
+      cursor:default;
+      transition:border-color .35s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease);
+    }
+    .niche-card:hover {
+      border-color:rgba(58,102,71,0.55);
+      transform:translateY(-5px);
+      box-shadow:0 20px 60px rgba(58,102,71,0.18);
+    }
+    .niche-card:hover .niche-glow { opacity:1; }
+    .niche-card:hover .niche-icon { color:var(--green-l); transform:scale(1.15) rotate(-4deg); }
+    .niche-glow {
+      position:absolute; inset:0; pointer-events:none; opacity:0;
+      background:radial-gradient(ellipse at 30% 0%,rgba(58,102,71,0.22) 0%,transparent 70%);
+      transition:opacity .35s var(--ease);
+    }
+    .niche-icon {
+      color:var(--green);
+      margin-bottom:16px;
+      transition:color .3s var(--ease), transform .35s var(--ease);
+      display:flex;
+    }
+    .niche-label {
+      font-family:'Playfair Display',serif;
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--cream);
+      margin-bottom:8px;
+      letter-spacing:-0.01em;
+    }
+    .niche-desc {
+      font-size:0.85rem;
+      color:rgba(240,232,220,0.48);
+      line-height:1.65;
+    }
+    /* CTA card */
+    .niche-card--cta {
+      grid-column:span 4;
+      background:linear-gradient(120deg,rgba(58,102,71,0.25),rgba(36,62,44,0.55));
+      border-color:rgba(58,102,71,0.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:44px 32px;
+    }
+    .niche-card--cta:hover { transform:none; }
+    .niche-cta-title {
+      font-family:'Playfair Display',serif;
+      font-size:1.5rem;
+      color:var(--cream);
+      margin-bottom:8px;
+    }
+    .niche-cta-sub {
+      color:rgba(240,232,220,0.5);
+      font-size:0.9rem;
+      margin-bottom:24px;
+    }
+    .niche-cta-btn {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--green);
+      color:var(--cream);
+      border-radius:50px;
+      padding:12px 28px;
+      font-size:0.88rem;
+      font-weight:600;
+      letter-spacing:0.04em;
+      text-decoration:none;
+      transition:background .25s var(--ease), transform .25s var(--ease);
+    }
+    .niche-cta-btn:hover { background:var(--green-l); transform:translateY(-2px); }
+    /* responsive */
+    @media(max-width:1024px){ .niches-grid{ grid-template-columns:repeat(2,1fr); } .niche-card--cta{ grid-column:span 2; } }
+    @media(max-width:600px){ .niches-grid{ grid-template-columns:1fr; } .niche-card--cta{ grid-column:span 1; } }
+    /* ════════════════════════════════════════════════ */
+
+    #process { padding:130px 0; }
+    .process-track { display:grid; grid-template-columns:repeat(4,1fr); position:relative; margin-top:80px; }
+    .process-track::before {
+      content:''; position:absolute; top:30px;
+      left:calc(12.5% + 30px); right:calc(12.5% + 30px);
+      height:1px; background:linear-gradient(90deg, var(--green), rgba(58,102,71,0.08));
+    }
+    .p-step { padding:0 20px; text-align:center; }
+    .p-num {
+      width:60px; height:60px; border-radius:50%;
+      border:1px solid rgba(240,232,220,0.18);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif; font-size:1.22rem; color:var(--cream-d);
+      margin:0 auto 26px; background:var(--bg); position:relative; z-index:1;
+      transition:background 0.4s, box-shadow 0.4s, border-color 0.4s, color 0.4s;
+    }
+    .p-step:hover .p-num { background:var(--green); border-color:var(--green); box-shadow:0 0 28px var(--glow); color:var(--cream); }
+    .p-step h4 { font-family:'Cormorant Garamond',serif; font-size:1.26rem; font-weight:500; margin-bottom:10px; color:var(--cream); }
+    .p-step p  { font-size:0.81rem; color:rgba(240,232,220,0.44); line-height:1.72; }
+
+    /* ══════════════════════════════
+       TESTIMONIALS
+    ══════════════════════════════ */
+    #testimonials { padding:130px 0; background:var(--bg2); }
+    .test-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .test-card {
+      background:var(--bg); border:1px solid var(--border); border-radius:20px;
+      padding:36px 30px; position:relative; overflow:hidden;
+      transition:border-color 0.4s, transform 0.4s;
+    }
+    .test-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(240,232,220,0.14), transparent);
+    }
+    .test-card:hover { border-color:rgba(240,232,220,0.14); transform:translateY(-4px); }
+    .test-stars { display:flex; gap:3px; margin-bottom:12px; }
+    .test-star { color:var(--green-l); font-size:0.9rem; }
+    .test-quote {
+      font-family:'Cormorant Garamond',serif; font-size:2.8rem; font-weight:700;
+      color:rgba(58,102,71,0.30); line-height:1; margin-bottom:10px;
+    }
+    .test-text { font-size:0.88rem; color:rgba(240,232,220,0.58); line-height:1.82; margin-bottom:28px; font-style:italic; }
+    .test-author { display:flex; align-items:center; gap:12px; }
+    .test-avatar {
+      width:42px; height:42px; border-radius:50%;
+      background:var(--green); border:2px solid rgba(58,102,71,0.4);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.78rem; font-weight:600; color:var(--cream); flex-shrink:0;
+    }
+    .test-name { font-size:0.88rem; font-weight:500; color:var(--cream); }
+    .test-role { font-size:0.72rem; color:rgba(240,232,220,0.36); }
+
+    /* ══════════════════════════════
+       RESULTS
+    ══════════════════════════════ */
+    #results { padding:130px 0; }
+    .results-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
+    .res-card {
+      background:var(--bg3); border:1px solid var(--border); border-radius:20px;
+      padding:44px 36px; text-align:center;
+      transition:border-color 0.4s, box-shadow 0.4s;
+    }
+    .res-card:hover { border-color:rgba(240,232,220,0.16); box-shadow:0 18px 50px rgba(0,0,0,0.3); }
+    .res-val { font-family:'Cormorant Garamond',serif; font-size:3.8rem; font-weight:600; line-height:1; margin-bottom:8px; color:var(--cream); }
+    .res-val .acc { color:var(--green-l); }
+    .res-label { font-size:0.73rem; color:rgba(240,232,220,0.38); text-transform:uppercase; letter-spacing:0.1em; }
+
+    /* ══════════════════════════════
+       BOOK CTA
+    ══════════════════════════════ */
+    #book { padding:150px 0; text-align:center; position:relative; overflow:hidden; }
+    .book-glow {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:800px; height:800px;
+      background:radial-gradient(circle, rgba(58,102,71,0.09) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .book-inner { position:relative; z-index:2; max-width:720px; margin:0 auto; }
+    .book-inner .display { margin-bottom:18px; }
+    .book-inner > p { color:rgba(240,232,220,0.52); margin-bottom:46px; font-size:1rem; line-height:1.8; }
+    .book-btns { display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin-bottom:50px; }
+    .book-trust { display:flex; align-items:center; justify-content:center; gap:34px; flex-wrap:wrap; }
+    .trust-item { display:flex; align-items:center; gap:8px; font-size:0.76rem; color:rgba(240,232,220,0.38); }
+    .trust-item svg { color:var(--green-l); flex-shrink:0; }
+
+    /* ══════════════════════════════
+       CONTACT
+    ══════════════════════════════ */
+    #contact { padding:100px 0; background:var(--bg2); }
+    .contact-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:900px; margin:0 auto; }
+    .contact-card {
+      background:var(--bg); border:1px solid var(--border); border-radius:18px;
+      padding:32px 28px; display:flex; align-items:flex-start; gap:16px;
+      transition:border-color 0.4s, transform 0.3s; position:relative; overflow:hidden;
+    }
+    .contact-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(58,102,71,0.38), transparent);
+    }
+    .contact-card:hover { border-color:rgba(58,102,71,0.32); transform:translateY(-3px); }
+    .contact-icon {
+      width:44px; height:44px; border-radius:12px; flex-shrink:0;
+      background:rgba(58,102,71,0.14); border:1px solid rgba(58,102,71,0.24);
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.3s;
+    }
+    .contact-card:hover .contact-icon { background:rgba(58,102,71,0.24); }
+    .contact-lbl { font-size:0.66rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(240,232,220,0.38); margin-bottom:5px; }
+    .contact-val { font-size:0.9rem; color:var(--cream); line-height:1.5; }
+    .contact-val a { color:var(--cream); transition:color 0.3s; }
+    .contact-val a:hover { color:var(--green-l); }
+
+    /* ── FOOTER ── */
+    footer { border-top:1px solid var(--border); padding:44px 0 26px; }
+    .foot-top { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:22px; }
+    .foot-logo { display:flex; align-items:center; gap:11px; }
+    .foot-logo-svg { width:34px; height:34px; }
+    .foot-name { font-family:'Cormorant Garamond',serif; font-size:0.98rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream); }
+    .foot-links { display:flex; gap:26px; list-style:none; flex-wrap:wrap; }
+    .foot-links a { font-size:0.73rem; color:rgba(240,232,220,0.36); letter-spacing:0.06em; transition:color 0.3s; }
+    .foot-links a:hover { color:var(--cream); }
+    .foot-social { display:flex; gap:10px; }
+    .soc-btn {
+      width:34px; height:34px; border:1px solid var(--border); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      transition:border-color 0.3s, background 0.3s;
+    }
+    .soc-btn:hover { border-color:rgba(240,232,220,0.28); background:rgba(240,232,220,0.06); }
+    .foot-bot {
+      margin-top:26px; padding-top:20px; border-top:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    }
+    .foot-copy { font-size:0.7rem; color:rgba(240,232,220,0.28); }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media(max-width:1024px) {
+      .stats-grid { grid-template-columns:repeat(2,1fr); }
+      .stat-cell:nth-child(2) { border-right:none; }
+      .stat-cell:nth-child(3) { border-top:1px solid var(--border); }
+      .stat-cell:nth-child(4) { border-top:1px solid var(--border); border-right:none; }
+      .svc-grid { grid-template-columns:1fr 1fr; }
+      .process-track { grid-template-columns:1fr 1fr; gap:44px; }
+      .process-track::before { display:none; }
+      .test-grid { grid-template-columns:1fr 1fr; }
+      .contact-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:768px) {
+      .container { padding:0 20px; }
+      .nav-links { display:none; }
+      .nav-burger { display:flex; }
+      .about-grid { grid-template-columns:1fr; gap:48px; }
+      .svc-grid { grid-template-columns:1fr; }
+      .test-grid { grid-template-columns:1fr; }
+      .results-grid { grid-template-columns:1fr; }
+      .contact-grid { grid-template-columns:1fr; }
+      .foot-top { flex-direction:column; align-items:flex-start; }
+      .foot-bot { flex-direction:column; }
+    }
+    @media(max-width:480px) {
+      .stats-grid { grid-template-columns:1fr; }
+      .stat-cell { border-right:none; border-bottom:1px solid var(--border); }
+      .process-track { grid-template-columns:1fr; }
+    }
+
+    /* ══════════════════════════════
+       LOGIN BUTTON + AVATAR
+    ══════════════════════════════ */
+    .nav-login-btn {
+      display:flex; align-items:center; gap:7px;
+      padding:9px 18px; border-radius:50px;
+      border:1px solid rgba(240,232,220,0.18);
+      background:transparent; color:rgba(240,232,220,0.65);
+      font-size:0.72rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase;
+      cursor:pointer; font-family:'Inter',sans-serif;
+      transition:border-color 0.3s, color 0.3s, background 0.3s;
+    }
+    .nav-login-btn:hover { border-color:var(--cream); color:var(--cream); background:rgba(240,232,220,0.05); }
+
+    .nav-avatar {
+      width:34px; height:34px; border-radius:50%;
+      background:var(--green); border:2px solid rgba(240,232,220,0.22);
+      display:none; align-items:center; justify-content:center;
+      font-size:0.7rem; font-weight:600; color:var(--cream);
+      cursor:pointer; font-family:'Inter',sans-serif;
+      transition:border-color 0.3s, box-shadow 0.3s;
+      position:relative; flex-shrink:0;
+    }
+    .nav-avatar:hover { border-color:var(--cream); box-shadow:0 0 16px rgba(240,232,220,0.15); }
+    .nav-avatar.show { display:flex; }
+
+    .profile-drop {
+      position:absolute; top:calc(100% + 12px); right:0;
+      width:240px;
+      background:rgba(10,18,11,0.97);
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(240,232,220,0.10);
+      border-radius:16px; overflow:hidden;
+      opacity:0; pointer-events:none; transform:translateY(-8px);
+      transition:opacity 0.3s, transform 0.3s; z-index:1000;
+    }
+    .profile-drop.open { opacity:1; pointer-events:all; transform:translateY(0); }
+    .profile-drop-header { padding:18px 18px 14px; border-bottom:1px solid rgba(240,232,220,0.07); }
+    .profile-drop-name  { font-size:0.88rem; font-weight:500; color:var(--cream); margin-bottom:2px; }
+    .profile-drop-email { font-size:0.7rem; color:rgba(240,232,220,0.38); }
+    .profile-drop-menu  { padding:7px; }
+    .profile-drop-item {
+      display:flex; align-items:center; gap:9px;
+      padding:9px 12px; border-radius:10px;
+      font-size:0.77rem; color:rgba(240,232,220,0.58);
+      cursor:pointer; transition:background 0.2s, color 0.2s;
+      border:none; background:none; width:100%;
+      font-family:'Inter',sans-serif; text-align:left;
+    }
+    .profile-drop-item:hover { background:rgba(240,232,220,0.06); color:var(--cream); }
+    .profile-drop-item.danger { color:rgba(220,90,90,0.75); }
+    .profile-drop-item.danger:hover { background:rgba(220,90,90,0.08); color:rgba(220,90,90,1); }
+
+    /* ══════════════════════════════
+       AUTH MODAL
+    ══════════════════════════════ */
+    .auth-overlay {
+      position:fixed; inset:0; z-index:2000;
+      background:rgba(0,0,0,0.72);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity 0.35s; padding:20px;
+    }
+    .auth-overlay.open { opacity:1; pointer-events:all; }
+    .auth-modal {
+      width:100%; max-width:420px;
+      background:rgba(10,18,11,0.98);
+      border:1px solid rgba(240,232,220,0.10);
+      border-radius:26px; overflow:hidden;
+      transform:translateY(22px) scale(0.97);
+      transition:transform 0.42s var(--ease); position:relative;
+    }
+    .auth-overlay.open .auth-modal { transform:translateY(0) scale(1); }
+    .auth-modal-glow {
+      position:absolute; top:-80px; right:-80px; width:240px; height:240px;
+      background:radial-gradient(circle, rgba(58,102,71,0.22), transparent 70%);
+      border-radius:50%; pointer-events:none;
+    }
+    .auth-top { padding:32px 34px 0; display:flex; flex-direction:column; align-items:center; }
+    .auth-logo { display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+    .auth-logo-mark {
+      width:36px; height:36px; background:var(--green); border-radius:9px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:700; color:var(--cream);
+    }
+    .auth-logo-name {
+      font-family:'Cormorant Garamond',serif; font-size:1.08rem; font-weight:600;
+      letter-spacing:0.1em; text-transform:uppercase; color:var(--cream);
+    }
+    .auth-tabs {
+      display:flex; background:rgba(240,232,220,0.05);
+      border:1px solid rgba(240,232,220,0.08); border-radius:50px; padding:3px; margin-bottom:26px;
+    }
+    .auth-tab {
+      padding:8px 22px; border-radius:50px; border:none; background:none;
+      font-size:0.72rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase;
+      color:rgba(240,232,220,0.38); cursor:pointer; font-family:'Inter',sans-serif;
+      transition:background 0.3s, color 0.3s;
+    }
+    .auth-tab.active { background:var(--green); color:var(--cream); }
+    .auth-body { padding:0 34px 34px; }
+    .auth-panel { display:none; flex-direction:column; gap:13px; }
+    .auth-panel.active { display:flex; }
+    .auth-field { display:flex; flex-direction:column; gap:6px; }
+    .auth-label { font-size:0.67rem; letter-spacing:0.13em; text-transform:uppercase; color:rgba(240,232,220,0.42); font-weight:500; }
+    .auth-input {
+      width:100%; padding:12px 15px;
+      background:rgba(240,232,220,0.05); border:1px solid rgba(240,232,220,0.10);
+      border-radius:11px; font-size:0.88rem; color:var(--cream);
+      font-family:'Inter',sans-serif; outline:none;
+      transition:border-color 0.3s, box-shadow 0.3s;
+    }
+    .auth-input::placeholder { color:rgba(240,232,220,0.22); }
+    .auth-input:focus { border-color:rgba(58,102,71,0.6); box-shadow:0 0 0 3px rgba(58,102,71,0.11); }
+    .auth-submit {
+      width:100%; padding:13px; background:var(--cream); color:var(--green-d);
+      border:none; border-radius:11px;
+      font-size:0.78rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+      cursor:pointer; font-family:'Inter',sans-serif;
+      transition:background 0.3s, transform 0.2s; margin-top:4px;
+    }
+    .auth-submit:hover { background:#fff; transform:translateY(-1px); }
+    .auth-msg { font-size:0.74rem; text-align:center; padding:8px 12px; border-radius:8px; display:none; }
+    .auth-msg.error   { background:rgba(220,80,80,0.10); color:rgba(220,120,120,1); border:1px solid rgba(220,80,80,0.2); display:block; }
+    .auth-msg.success { background:rgba(58,102,71,0.15); color:var(--green-l); border:1px solid rgba(58,102,71,0.3); display:block; }
+    .auth-close {
+      position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%;
+      background:rgba(240,232,220,0.06); border:none; color:rgba(240,232,220,0.45);
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:background 0.2s, color 0.2s; font-size:0.9rem;
+    }
+    .auth-close:hover { background:rgba(240,232,220,0.12); color:var(--cream); }
+
+    /* ══════════════════════════════
+       INSTAGRAM DM SECTION
+    ══════════════════════════════ */
+    #instagram { padding:80px 0; overflow:hidden; }
+    .ig-wrap {
+      position:relative; border-radius:24px; overflow:hidden;
+      background:linear-gradient(135deg, rgba(10,18,11,0.95) 0%, rgba(13,21,14,0.90) 100%);
+      border:1px solid rgba(240,232,220,0.09);
+      padding:52px 52px;
+      display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:center;
+    }
+    /* IG gradient orb */
+    .ig-orb {
+      position:absolute; top:-100px; right:-100px;
+      width:500px; height:500px; border-radius:50%; pointer-events:none;
+      background:radial-gradient(circle,
+        rgba(240,100,40,0.12) 0%,
+        rgba(180,50,120,0.10) 40%,
+        rgba(80,40,180,0.05) 70%,
+        transparent 100%);
+      animation:orbPulse 6s ease-in-out infinite alternate;
+    }
+    @keyframes orbPulse { 0%{transform:scale(1);opacity:0.8} 100%{transform:scale(1.1);opacity:1} }
+    .ig-orb-2 {
+      position:absolute; bottom:-80px; left:-80px;
+      width:380px; height:380px; border-radius:50%; pointer-events:none;
+      background:radial-gradient(circle, rgba(58,102,71,0.14) 0%, transparent 70%);
+    }
+    /* top shimmer line */
+    .ig-wrap::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg, transparent 0%, rgba(240,100,40,0.5) 30%, rgba(180,50,120,0.5) 60%, rgba(80,40,180,0.4) 90%, transparent 100%);
+    }
+
+    .ig-left { position:relative; z-index:2; }
+    .ig-eyebrow {
+      display:inline-flex; align-items:center; gap:10px; margin-bottom:22px;
+    }
+    .ig-eyebrow-icon {
+      width:36px; height:36px; border-radius:10px; flex-shrink:0;
+      background:linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .ig-eyebrow-label {
+      font-size:0.68rem; font-weight:500; letter-spacing:0.24em; text-transform:uppercase;
+      color:rgba(240,232,220,0.5);
+    }
+    .ig-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2rem,3.2vw,2.8rem);
+      font-weight:300; line-height:1.1; letter-spacing:-0.02em;
+      color:var(--cream); margin-bottom:14px;
+    }
+    .ig-title em { font-style:italic; color:#e6683c; }
+    .ig-sub { font-size:0.94rem; color:rgba(240,232,220,0.5); line-height:1.8; margin-bottom:34px; max-width:400px; }
+    .ig-cta {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:14px 30px; border-radius:50px;
+      background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);
+      color:#fff; font-size:0.78rem; font-weight:600; letter-spacing:0.09em; text-transform:uppercase;
+      cursor:pointer; border:none; font-family:'Inter',sans-serif;
+      transition:opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow:0 8px 28px rgba(220,39,67,0.30);
+      text-decoration:none;
+    }
+    .ig-cta:hover { opacity:0.88; transform:translateY(-2px); box-shadow:0 16px 40px rgba(220,39,67,0.38); }
+
+    /* Phone mockup */
+    .ig-right { position:relative; z-index:2; display:flex; justify-content:center; }
+    .ig-phone {
+      width:190px; flex-shrink:0;
+      background:rgba(10,18,11,0.95);
+      border:1px solid rgba(240,232,220,0.12);
+      border-radius:36px; overflow:hidden;
+      box-shadow:0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(240,232,220,0.06);
+      animation:phoneFloat 5s ease-in-out infinite;
+    }
+    @keyframes phoneFloat {
+      0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)}
+    }
+    .ig-phone-bar {
+      height:40px; background:rgba(13,21,14,0.98);
+      border-bottom:1px solid rgba(240,232,220,0.06);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px;
+    }
+    .ig-phone-bar-title { font-size:0.78rem; font-weight:600; color:var(--cream); }
+    .ig-phone-bar-icon { display:flex; gap:8px; }
+    .ig-phone-bar-dot { width:6px; height:6px; border-radius:50%; background:rgba(240,232,220,0.2); }
+    .ig-messages { padding:14px; display:flex; flex-direction:column; gap:10px; }
+    .ig-msg {
+      padding:10px 13px; border-radius:16px;
+      font-size:0.76rem; line-height:1.5; max-width:80%;
+      animation:msgIn 0.4s var(--ease) both;
+    }
+    .ig-msg.from { background:rgba(240,232,220,0.08); color:rgba(240,232,220,0.75); border-radius:16px 16px 16px 4px; align-self:flex-start; }
+    .ig-msg.to   { background:linear-gradient(135deg,#dc2743,#bc1888); color:#fff; border-radius:16px 16px 4px 16px; align-self:flex-end; }
+    @keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .ig-msg:nth-child(1){animation-delay:0.2s}
+    .ig-msg:nth-child(2){animation-delay:0.5s}
+    .ig-msg:nth-child(3){animation-delay:0.8s}
+    .ig-msg:nth-child(4){animation-delay:1.1s}
+    .ig-typing {
+      display:flex; align-items:center; gap:4px; padding:10px 14px;
+      background:rgba(240,232,220,0.06); border-radius:16px 16px 16px 4px;
+      align-self:flex-start; width:fit-content;
+    }
+    .ig-typing span {
+      width:5px; height:5px; background:rgba(240,232,220,0.45); border-radius:50%;
+      animation:typingBounce 1.2s ease-in-out infinite;
+    }
+    .ig-typing span:nth-child(2){animation-delay:.2s}
+    .ig-typing span:nth-child(3){animation-delay:.4s}
+    @keyframes typingBounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+    .ig-phone-input {
+      margin:8px 14px 14px; background:rgba(240,232,220,0.06);
+      border:1px solid rgba(240,232,220,0.10); border-radius:20px;
+      padding:8px 14px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .ig-phone-input span { font-size:0.72rem; color:rgba(240,232,220,0.25); }
+    .ig-phone-input svg { color:rgba(220,39,67,0.6); }
+
+    @media(max-width:768px) {
+      .ig-wrap { grid-template-columns:1fr; padding:48px 30px; gap:40px; }
+      .ig-right { display:none; }
+    }
+
+    /* ══════════════════════════════
+       LIVE CHAT WIDGET
+    ══════════════════════════════ */
+    .chat-widget { position:fixed; bottom:28px; right:28px; z-index:1500; }
+
+    .chat-fab {
+      width:52px; height:52px; border-radius:50%;
+      background:linear-gradient(135deg, var(--green), var(--green-l));
+      border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 6px 22px var(--glow);
+      transition:transform 0.3s, box-shadow 0.3s;
+      position:relative; z-index:2;
+    }
+    .chat-fab:hover { transform:scale(1.08); box-shadow:0 10px 30px var(--glow); }
+    .chat-fab .icon-chat  { position:absolute; transition:opacity 0.3s, transform 0.3s; }
+    .chat-fab .icon-close { position:absolute; opacity:0; transform:rotate(-90deg); transition:opacity 0.3s, transform 0.3s; }
+    .chat-widget.open .chat-fab .icon-chat  { opacity:0; transform:rotate(90deg); }
+    .chat-widget.open .chat-fab .icon-close { opacity:1; transform:rotate(0deg); }
+
+    /* unread badge */
+    .chat-badge {
+      position:absolute; top:-4px; right:-4px;
+      width:18px; height:18px; border-radius:50%;
+      background:#e63946; border:2px solid var(--bg);
+      font-size:0.6rem; font-weight:700; color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      animation:badgePop 0.4s var(--ease) 2s both;
+    }
+    @keyframes badgePop { from{transform:scale(0)} to{transform:scale(1)} }
+    .chat-badge.hide { display:none; }
+
+    /* pulse ring */
+    .chat-pulse {
+      position:absolute; inset:-6px; border-radius:50%;
+      border:1px solid rgba(58,102,71,0.4);
+      animation:chatPulse 2.4s ease-out infinite; pointer-events:none;
+    }
+    @keyframes chatPulse { 0%{transform:scale(1);opacity:.5} 100%{transform:scale(1.5);opacity:0} }
+
+    .chat-panel {
+      position:absolute; bottom:68px; right:0;
+      width:330px;
+      background:rgba(10,18,11,0.98);
+      backdrop-filter:blur(26px); -webkit-backdrop-filter:blur(26px);
+      border:1px solid rgba(240,232,220,0.10);
+      border-radius:22px; overflow:hidden;
+      opacity:0; pointer-events:none;
+      transform:translateY(14px) scale(0.97);
+      transition:opacity 0.35s var(--ease), transform 0.35s var(--ease);
+      box-shadow:0 30px 70px rgba(0,0,0,0.5);
+    }
+    .chat-widget.open .chat-panel { opacity:1; pointer-events:all; transform:translateY(0) scale(1); }
+
+    .chat-head {
+      padding:18px 20px 14px;
+      background:linear-gradient(135deg, rgba(58,102,71,0.18), rgba(58,102,71,0.06));
+      border-bottom:1px solid rgba(240,232,220,0.07);
+      display:flex; align-items:center; gap:12px;
+    }
+    .chat-head-avatar {
+      width:42px; height:42px; border-radius:50%;
+      background:linear-gradient(135deg, var(--green), var(--green-l));
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:700; color:var(--cream);
+      box-shadow:0 4px 14px var(--glow);
+    }
+    .chat-head-info { flex:1; }
+    .chat-head-name { font-size:0.9rem; font-weight:500; color:var(--cream); }
+    .chat-head-status { font-size:0.68rem; color:rgba(240,232,220,0.45); display:flex; align-items:center; gap:5px; margin-top:1px; }
+    .chat-online { width:6px; height:6px; background:#4ade80; border-radius:50%; flex-shrink:0; animation:pulse 2s ease infinite; }
+
+    .chat-messages {
+      height:220px; overflow-y:auto; padding:16px;
+      display:flex; flex-direction:column; gap:10px;
+      scrollbar-width:none;
+    }
+    .chat-messages::-webkit-scrollbar { display:none; }
+
+    .chat-bubble {
+      max-width:82%; padding:10px 14px; border-radius:14px;
+      font-size:0.8rem; line-height:1.55;
+    }
+    .chat-bubble.bot {
+      background:rgba(58,102,71,0.18); color:rgba(240,232,220,0.85);
+      border-radius:14px 14px 14px 4px; align-self:flex-start;
+    }
+    .chat-bubble.user {
+      background:var(--cream); color:var(--green-d);
+      border-radius:14px 14px 4px 14px; align-self:flex-end;
+    }
+    .chat-time { font-size:0.6rem; color:rgba(240,232,220,0.28); margin-top:2px; }
+    .chat-bubble.user .chat-time { text-align:right; color:rgba(7,12,8,0.4); }
+
+    .chat-input-row {
+      padding:12px; border-top:1px solid rgba(240,232,220,0.07);
+      display:flex; gap:8px; align-items:flex-end;
+    }
+    .chat-input {
+      flex:1; padding:10px 13px; border-radius:12px;
+      background:rgba(240,232,220,0.06); border:1px solid rgba(240,232,220,0.10);
+      color:var(--cream); font-size:0.82rem; font-family:'Inter',sans-serif;
+      outline:none; resize:none; min-height:40px; max-height:80px;
+      scrollbar-width:none; transition:border-color 0.3s;
+    }
+    .chat-input:focus { border-color:rgba(58,102,71,0.5); }
+    .chat-input::placeholder { color:rgba(240,232,220,0.24); }
+    .chat-send {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      background:var(--green); border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.3s, transform 0.2s;
+    }
+    .chat-send:hover { background:var(--green-l); transform:scale(1.08); }
+
+    /* login prompt inside chat */
+    .chat-login-prompt {
+      padding:24px 20px; text-align:center;
+    }
+    .chat-login-prompt p { font-size:0.82rem; color:rgba(240,232,220,0.48); margin-bottom:14px; line-height:1.65; }
+    .chat-login-prompt button {
+      background:var(--cream); color:var(--green-d); border:none; border-radius:50px;
+      padding:10px 22px; font-size:0.74rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.3s;
+    }
+    .chat-login-prompt button:hover { background:#fff; }
+
+  </style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true">
+  <div class="amb-blob amb-1"></div>
+  <div class="amb-blob amb-2"></div>
+  <div class="amb-blob amb-3"></div>
+  <div class="amb-blob amb-4"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg class="nav-logo-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="80" height="80" rx="12" fill="rgba(240,232,220,0.07)"/>
+          <text x="40" y="54" text-anchor="middle" font-family="Georgia,serif" font-size="46" font-weight="700" fill="#F0E8DC" letter-spacing="-2">K</text>
+          <line x1="8"  y1="64" x2="22" y2="64" stroke="#F0E8DC" stroke-width="0.8" opacity="0.4"/>
+          <text x="24" y="68" font-family="Arial,sans-serif" font-size="7" fill="#F0E8DC" letter-spacing="2" opacity="0.5">KIRCKHA</text>
+          <line x1="57" y1="64" x2="72" y2="64" stroke="#F0E8DC" stroke-width="0.8" opacity="0.4"/>
+        </svg>
+        <div class="nav-wordmark">Kirckha<small>AI Marketing Agency</small></div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#niches">Niches</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#contact" class="nav-book">Get Started</a></li>
+      </ul>
+
+      <div style="display:flex;align-items:center;gap:10px;position:relative;">
+        <button class="nav-login-btn" id="navLoginBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Log in
+        </button>
+        <div class="nav-avatar" id="navAvatar" title="My profile">
+          <span id="navAvatarInitials">?</span>
+          <div class="profile-drop" id="profileDrop">
+            <div class="profile-drop-header">
+              <div class="profile-drop-name" id="dropName">—</div>
+              <div class="profile-drop-email" id="dropEmail">—</div>
+            </div>
+            <div class="profile-drop-menu">
+              <button class="profile-drop-item" id="dropOpenChat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Open Live Chat
+              </button>
+              <button class="profile-drop-item danger" id="logoutBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="nav-burger" id="burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mobMenu">
+  <a href="#about"        class="ml">About</a>
+  <a href="#services"     class="ml">Services</a>
+  <a href="#niches"       class="ml">Niches</a>
+  <a href="#process"      class="ml">Process</a>
+  <a href="#results"      class="ml">Results</a>
+  <a href="#testimonials" class="ml">Testimonials</a>
+  <a href="#contact" class="ml">Get Started</a>
+</div>
+
+<main>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        AI-Powered Creator Marketing · Copenhagen
+      </div>
+
+      <h1 class="hero-title">
+        <span class="line"><span class="li">Where <em>Creators</em></span></span>
+        <span class="line"><span class="li"><span class="stroke">Meet</span> Intelligence</span></span>
+        <span class="line"><span class="li">&amp; <em>Growth</em></span></span>
+      </h1>
+
+      <p class="hero-sub">
+        We help content creators grow and monetize their brands through data-driven, AI-optimized marketing that converts audiences into loyal customers.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-cream btn-primary-pulse">
+          Start Growing
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#services" class="btn btn-ghost">Explore Services</a>
+      </div>
+
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span id="liveCount">—</span> people viewing right now
+      </div>
+
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val"><span class="counter" data-target="340">0</span><span class="acc">%</span></div>
+          <div class="hero-stat-label">Avg. engagement uplift</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val"><span class="counter" data-target="150">0</span><span class="acc">+</span></div>
+          <div class="hero-stat-label">Creators scaled</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val"><span class="counter" data-target="4">0</span><span class="acc">x</span></div>
+          <div class="hero-stat-label">Average ROAS</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val"><span class="counter" data-target="2">0</span><span class="acc">M+</span></div>
+          <div class="hero-stat-label">Organic impressions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ══ MARQUEE ══ -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="mtrack">
+    <div class="mitem"><div class="mdot"></div>AI Content Strategy</div>
+    <div class="mitem"><div class="mdot"></div>Audience Growth</div>
+    <div class="mitem"><div class="mdot"></div>Brand Monetization</div>
+    <div class="mitem"><div class="mdot"></div>Fitness Creators</div>
+    <div class="mitem"><div class="mdot"></div>Beauty &amp; Lifestyle</div>
+    <div class="mitem"><div class="mdot"></div>Fashion Brands</div>
+    <div class="mitem"><div class="mdot"></div>Data-Driven Campaigns</div>
+    <div class="mitem"><div class="mdot"></div>Conversion Optimisation</div>
+    <div class="mitem"><div class="mdot"></div>Copenhagen, Denmark</div>
+    <div class="mitem"><div class="mdot"></div>AI Content Strategy</div>
+    <div class="mitem"><div class="mdot"></div>Audience Growth</div>
+    <div class="mitem"><div class="mdot"></div>Brand Monetization</div>
+    <div class="mitem"><div class="mdot"></div>Fitness Creators</div>
+    <div class="mitem"><div class="mdot"></div>Beauty &amp; Lifestyle</div>
+    <div class="mitem"><div class="mdot"></div>Fashion Brands</div>
+    <div class="mitem"><div class="mdot"></div>Data-Driven Campaigns</div>
+    <div class="mitem"><div class="mdot"></div>Conversion Optimisation</div>
+    <div class="mitem"><div class="mdot"></div>Copenhagen, Denmark</div>
+  </div>
+</div>
+
+<!-- ══ STATS ══ -->
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid r">
+      <div class="stat-cell">
+        <div class="stat-val"><span class="counter" data-target="340">0</span><span class="acc">%</span></div>
+        <div class="stat-label">Average engagement increase across campaigns</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val"><span class="counter" data-target="150">0</span><span class="acc">+</span></div>
+        <div class="stat-label">Content creators successfully scaled</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val"><span class="counter" data-target="4">0</span><span class="acc">x</span></div>
+        <div class="stat-label">Average return on ad spend (ROAS)</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val"><span class="counter" data-target="2">0</span><span class="acc">M+</span></div>
+        <div class="stat-label">Organic impressions generated</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="r">
+        <div class="tag green">About Kirckha</div>
+        <h2 class="display" style="margin-bottom:28px;">
+          We build <em>bridges</em><br/>between creators<br/>&amp; their audience.
+        </h2>
+        <div class="about-text">
+          <p>At Kirckha, we believe every creator has a unique story — and the right marketing amplifies that story to the people who need to hear it most.</p>
+          <p>By combining cutting-edge AI with deep creative intuition, we design campaigns that feel authentic, perform powerfully, and scale sustainably across digital platforms.</p>
+          <p>From fitness coaches to beauty entrepreneurs and fashion icons — we specialize in the lifestyle creator economy, making your products impossible to ignore.</p>
+        </div>
+        <div style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="#services" class="btn btn-cream">
+            What We Do
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="btn btn-ghost">Follow Us</a>
+        </div>
+      </div>
+
+      <div class="r d2">
+        <div class="about-card">
+          <div class="about-glow"></div>
+          <div class="tag green">Our Mission</div>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:300;line-height:1.32;color:var(--cream);margin-bottom:16px;">
+            Turning creator influence into measurable, scalable revenue.
+          </h3>
+          <p style="font-size:0.83rem;color:rgba(240,232,220,0.48);line-height:1.78;margin-bottom:30px;">
+            Every campaign is anchored in real data, creative precision, and AI that continuously learns what works for your unique audience.
+          </p>
+          <div class="about-stat-grid">
+            <div>
+              <div class="about-stat-val"><span class="counter" data-target="3">0</span><span class="acc">x</span></div>
+              <div class="about-stat-label">Avg. ROAS increase</div>
+            </div>
+            <div>
+              <div class="about-stat-val"><span class="counter" data-target="85">0</span><span class="acc">%</span></div>
+              <div class="about-stat-label">Engagement lift</div>
+            </div>
+            <div>
+              <div class="about-stat-val"><span class="counter" data-target="150">0</span><span class="acc">+</span></div>
+              <div class="about-stat-label">Creators scaled</div>
+            </div>
+            <div>
+              <div class="about-stat-val"><span class="counter" data-target="12">0</span><span class="acc">+</span></div>
+              <div class="about-stat-label">Niches covered</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section id="services">
+  <div class="container">
+    <div class="section-hdr r">
+      <div class="section-hdr-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-label">What We Offer</span>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-hdr-title">Services built for <em>creators</em><br/>who mean business.</h2>
+      <p>Every service removes friction between your brand and your audience — replacing it with results that compound over time.</p>
+    </div>
+
+    <div class="svc-grid">
+      <!-- 01 -->
+      <div class="svc-card r">
+        <svg class="svc-bg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30"  cy="60"  r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="30"  cy="100" r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="30"  cy="140" r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="100" cy="50"  r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="100" cy="100" r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="100" cy="150" r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="170" cy="70"  r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="170" cy="130" r="5" stroke="#F0E8DC" stroke-width="1.2"/>
+          <line x1="35" y1="60"  x2="97" y2="50"  stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="35" y1="100" x2="97" y2="100" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="35" y1="140" x2="97" y2="150" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="105" y1="50"  x2="165" y2="70"  stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="105" y1="100" x2="165" y2="130" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="105" y1="150" x2="165" y2="130" stroke="#F0E8DC" stroke-width="0.7"/>
+        </svg>
+        <div class="svc-num">01</div>
+        <div class="svc-stat"><span class="counter" data-target="340">0</span><span>%</span></div>
+        <span class="svc-stat-label">Avg. engagement uplift</span>
+        <h3>AI-Optimized Content</h3>
+        <p>Content crafted and optimized by AI that learns what resonates with your audience — maximizing reach, saves, and shares on every post.</p>
+        <div class="svc-arrow">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+
+      <!-- 02 -->
+      <div class="svc-card r d1">
+        <svg class="svc-bg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10"  y="100" width="16" height="50"  rx="2" stroke="#F0E8DC" stroke-width="1.2"/>
+          <rect x="36"  y="75"  width="16" height="75"  rx="2" stroke="#F0E8DC" stroke-width="1.2"/>
+          <rect x="62"  y="55"  width="16" height="95"  rx="2" stroke="#F0E8DC" stroke-width="1.2"/>
+          <rect x="88"  y="35"  width="16" height="115" rx="2" stroke="#F0E8DC" stroke-width="1.2"/>
+          <rect x="114" y="20"  width="16" height="130" rx="2" stroke="#F0E8DC" stroke-width="1.2"/>
+          <line x1="5" y1="155" x2="140" y2="155" stroke="#F0E8DC" stroke-width="0.8"/>
+          <polyline points="18,100 44,75 70,55 96,35 122,20" stroke="#F0E8DC" stroke-width="1.2" fill="none" stroke-dasharray="3,3"/>
+        </svg>
+        <div class="svc-num">02</div>
+        <h3>Data-Driven Strategy</h3>
+        <p>No guesswork. Real audience data, market trends, and competitor insights baked into every decision we make on your behalf.</p>
+        <div class="svc-arrow">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+
+      <!-- 03 -->
+      <div class="svc-card r d2">
+        <svg class="svc-bg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="60" stroke="#F0E8DC" stroke-width="1.2"/>
+          <circle cx="80" cy="80" r="44" stroke="#F0E8DC" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <text x="80" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="36" font-weight="700" fill="#F0E8DC">$</text>
+          <path d="M48 112 L80 55 L112 112" stroke="#F0E8DC" stroke-width="1.2" fill="none"/>
+          <polyline points="100,55 112,55 112,67" stroke="#F0E8DC" stroke-width="1.2" fill="none"/>
+        </svg>
+        <div class="svc-num">03</div>
+        <h3>Brand Monetization</h3>
+        <p>From product launches to affiliate campaigns — strategic pathways that convert your following into sustainable, compounding revenue.</p>
+        <div class="svc-arrow">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+
+      <!-- 04 -->
+      <div class="svc-card r d1">
+        <svg class="svc-bg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="70" stroke="#F0E8DC" stroke-width="0.8"/>
+          <circle cx="80" cy="80" r="50" stroke="#F0E8DC" stroke-width="0.8"/>
+          <circle cx="80" cy="80" r="30" stroke="#F0E8DC" stroke-width="0.8"/>
+          <circle cx="80" cy="80" r="10" stroke="#F0E8DC" stroke-width="1.2"/>
+          <line x1="80" y1="5"   x2="80"  y2="35"  stroke="#F0E8DC" stroke-width="0.8"/>
+          <line x1="80" y1="125" x2="80"  y2="155" stroke="#F0E8DC" stroke-width="0.8"/>
+          <line x1="5"  y1="80"  x2="35"  y2="80"  stroke="#F0E8DC" stroke-width="0.8"/>
+          <line x1="125" y1="80" x2="155" y2="80"  stroke="#F0E8DC" stroke-width="0.8"/>
+          <circle cx="80" cy="80" r="3" fill="#F0E8DC"/>
+        </svg>
+        <div class="svc-num">04</div>
+        <h3>Audience Targeting</h3>
+        <p>AI-powered segmentation that identifies and engages your ideal customers — people ready to buy, not just browse.</p>
+        <div class="svc-arrow">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+
+      <!-- 05 -->
+      <div class="svc-card r d2">
+        <svg class="svc-bg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="80" y1="10"  x2="80"  y2="150" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="10" y1="80"  x2="150" y2="80"  stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="25" y1="25"  x2="135" y2="135" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="135" y1="25" x2="25"  y2="135" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="80" y1="10"  x2="135" y2="55"  stroke="#F0E8DC" stroke-width="0.5"/>
+          <line x1="80" y1="10"  x2="25"  y2="55"  stroke="#F0E8DC" stroke-width="0.5"/>
+          <circle cx="80" cy="80" r="22" stroke="#F0E8DC" stroke-width="1"/>
+          <circle cx="80" cy="80" r="6"  stroke="#F0E8DC" stroke-width="1.2"/>
+        </svg>
+        <div class="svc-num">05</div>
+        <h3>Creative Campaigns</h3>
+        <p>Visually stunning, emotionally resonant campaigns that stop the scroll and spark action — every single time.</p>
+        <div class="svc-arrow">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+
+      <!-- 06 -->
+      <div class="svc-card r d3">
+        <svg class="svc-bg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="10,140 35,115 60,125 85,85 110,70 135,40 155,25"
+            stroke="#F0E8DC" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10,140 35,115 60,125 85,85 110,70 135,40 155,25 155,155 10,155 Z"
+            fill="#F0E8DC" fill-opacity="0.05"/>
+          <circle cx="35"  cy="115" r="3.5" fill="#F0E8DC"/>
+          <circle cx="85"  cy="85"  r="3.5" fill="#F0E8DC"/>
+          <circle cx="135" cy="40"  r="3.5" fill="#F0E8DC"/>
+          <line x1="5"  y1="155" x2="155" y2="155" stroke="#F0E8DC" stroke-width="0.7"/>
+          <line x1="5"  y1="155" x2="5"   y2="10"  stroke="#F0E8DC" stroke-width="0.7"/>
+        </svg>
+        <div class="svc-num">06</div>
+        <h3>Platform Growth</h3>
+        <p>Organic and paid growth across Instagram, TikTok, YouTube and beyond — with platform-native strategies that feel real.</p>
+        <div class="svc-arrow">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ NICHES ══ -->
+<section id="niches">
+  <div class="container">
+    <div class="section-hdr r">
+      <div class="section-hdr-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-label">Who We Work With</span>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-hdr-title">Every niche. <em>One agency.</em></h2>
+      <p>We've driven growth across the creator economy — whatever your niche, we know how to scale it.</p>
+    </div>
+
+    <div class="niches-grid r">
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 3C8.477 3 4 7.477 4 13s4.477 10 10 10 10-4.477 10-10S19.523 3 14 3zm0 3a7 7 0 110 14A7 7 0 0114 6zm-1 3v5l4 2.5-.75 1.23L12 15V9h1z" fill="currentColor"/></svg>
+        </div>
+        <div class="niche-label">Fashion &amp; Lifestyle</div>
+        <div class="niche-desc">Wardrobe drops, brand deals, capsule collab campaigns.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="4" y="7" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M20 12l4 3-4 3V12z" fill="currentColor"/></svg>
+        </div>
+        <div class="niche-label">Gaming &amp; Esports</div>
+        <div class="niche-desc">Stream growth, sponsorship funnels, merch monetisation.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 4a2 2 0 100 4 2 2 0 000-4zm-7 7h14l-1.5 9H8.5L7 11zm3 3v3m4-3v3m4-3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <div class="niche-label">Food &amp; Cooking</div>
+        <div class="niche-desc">Recipe virality, kitchenware deals, restaurant partnerships.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M9 14l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        </div>
+        <div class="niche-label">Fitness &amp; Wellness</div>
+        <div class="niche-desc">App deals, supplement brands, subscription programme launches.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="5" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M10 10h8M10 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="niche-label">Tech &amp; Reviews</div>
+        <div class="niche-desc">Unboxing monetisation, affiliate stacks, product launch amplification.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 14s2-4 5-4 5 8 8 8 5-4 5-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        </div>
+        <div class="niche-label">Travel &amp; Adventure</div>
+        <div class="niche-desc">Tourism boards, gear sponsors, long-form ad integrations.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M7 17s1-5 7-5 7 5 7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="14" cy="9" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        </div>
+        <div class="niche-label">Beauty &amp; Skincare</div>
+        <div class="niche-desc">Product seeding, UGC pipelines, brand ambassador structures.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card">
+        <div class="niche-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 20l4-8 4 5 3-3 4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </div>
+        <div class="niche-label">Finance &amp; Business</div>
+        <div class="niche-desc">Fintech partnerships, course funnels, newsletter monetisation.</div>
+        <div class="niche-glow"></div>
+      </div>
+
+      <div class="niche-card niche-card--cta r">
+        <div class="niche-cta-inner">
+          <div class="niche-cta-title">Don't see your niche?</div>
+          <div class="niche-cta-sub">We grow every kind of creator. Tell us about yours.</div>
+          <a href="#book" class="niche-cta-btn">Start the conversation →</a>
+        </div>
+        <div class="niche-glow"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROCESS ══ -->
+<section id="process">
+  <div class="container">
+    <div class="section-hdr r" style="margin-bottom:0;">
+      <div class="section-hdr-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-label">How It Works</span>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-hdr-title">From first call to<br/><em>first results</em> — fast.</h2>
+    </div>
+    <div class="process-track">
+      <div class="p-step r">
+        <div class="p-num">01</div>
+        <h4>Discovery Call</h4>
+        <p>We learn your brand, goals, audience, and current challenges to map a precise growth path.</p>
+      </div>
+      <div class="p-step r d1">
+        <div class="p-num">02</div>
+        <h4>Strategy Build</h4>
+        <p>Our AI analyzes your data and we craft a custom campaign plan aligned with your monetization goals.</p>
+      </div>
+      <div class="p-step r d2">
+        <div class="p-num">03</div>
+        <h4>Launch &amp; Optimize</h4>
+        <p>We execute and continuously refine — learning from real performance data to improve every week.</p>
+      </div>
+      <div class="p-step r d3">
+        <div class="p-num">04</div>
+        <h4>Scale &amp; Grow</h4>
+        <p>As results compound, we scale what works — turning early wins into long-term brand dominance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-hdr r">
+      <div class="section-hdr-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-label">Client Results</span>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-hdr-title">Stories of <em>real</em> growth.</h2>
+    </div>
+    <div class="test-grid">
+      <div class="test-card r">
+        <div class="test-stars"><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span></div>
+        <div class="test-quote">"</div>
+        <p class="test-text">Kirckha transformed our Instagram from a hobby page into a revenue machine. In 90 days our sales tripled and we finally have a system that runs itself.</p>
+        <div class="test-author">
+          <div class="test-avatar">SA</div>
+          <div>
+            <div class="test-name">Sofia Andersson</div>
+            <div class="test-role">Founder, Bloom Wellness</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card r d1">
+        <div class="test-stars"><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span></div>
+        <div class="test-quote">"</div>
+        <p class="test-text">The AI content strategy alone was worth 10x the investment. Our engagement went from 2% to 11% and brand partnership inquiries doubled in the first month.</p>
+        <div class="test-author">
+          <div class="test-avatar">MK</div>
+          <div>
+            <div class="test-name">Marco Keller</div>
+            <div class="test-role">Fitness Creator, 280K followers</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card r d2">
+        <div class="test-stars"><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span><span class="test-star">★</span></div>
+        <div class="test-quote">"</div>
+        <p class="test-text">We'd tried three agencies before. Kirckha was the first team that actually understood our audience and delivered — a 4.2x ROAS in month two.</p>
+        <div class="test-author">
+          <div class="test-avatar">LP</div>
+          <div>
+            <div class="test-name">Lena Petrova</div>
+            <div class="test-role">CEO, Velour Fashion</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RESULTS ══ -->
+<section id="results">
+  <div class="container">
+    <div class="section-hdr r">
+      <div class="section-hdr-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-label">Real Results</span>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-hdr-title">Numbers that <em>speak</em><br/>for themselves.</h2>
+    </div>
+    <div class="results-grid r d1">
+      <div class="res-card">
+        <div class="res-val"><span class="counter" data-target="340">0</span><span class="acc">%</span></div>
+        <div class="res-label">Average engagement increase</div>
+      </div>
+      <div class="res-card">
+        <div class="res-val"><span class="counter" data-target="2">0</span><span class="acc">M+</span></div>
+        <div class="res-label">Organic impressions generated</div>
+      </div>
+      <div class="res-card">
+        <div class="res-val"><span class="counter" data-target="4">0</span><span class="acc">x</span></div>
+        <div class="res-label">Return on ad spend (ROAS)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INSTAGRAM DM ══ -->
+<section id="instagram">
+  <div class="container">
+    <div class="ig-wrap r">
+      <div class="ig-orb"></div>
+      <div class="ig-orb-2"></div>
+
+      <div class="ig-left">
+        <div class="ig-eyebrow">
+          <div class="ig-eyebrow-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </div>
+          <span class="ig-eyebrow-label">Connect with us</span>
+        </div>
+        <h2 class="ig-title">Slide into our<br/><em>DMs</em> on Instagram</h2>
+        <p class="ig-sub">Get behind-the-scenes content, creator success stories, campaign breakdowns, and direct access to the Kirckha team — all on Instagram.</p>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="ig-cta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          DM us on Instagram
+        </a>
+      </div>
+
+      <div class="ig-right">
+        <div class="ig-phone">
+          <div class="ig-phone-bar">
+            <div class="ig-phone-bar-title">@kirckha</div>
+            <div class="ig-phone-bar-icon">
+              <div class="ig-phone-bar-dot"></div>
+              <div class="ig-phone-bar-dot"></div>
+              <div class="ig-phone-bar-dot"></div>
+            </div>
+          </div>
+          <div class="ig-messages">
+            <div class="ig-msg from">Hey! I've been following you for a while 👋</div>
+            <div class="ig-msg to">Hi! Thanks for reaching out 🌿</div>
+            <div class="ig-msg from">I want to grow my brand. Can you help?</div>
+            <div class="ig-msg to">Absolutely — let's talk strategy!</div>
+            <div class="ig-typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="ig-phone-input">
+            <span>Message...</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BOOK CTA ══ -->
+<section id="book">
+  <div class="book-glow"></div>
+  <div class="container">
+    <div class="book-inner r">
+      <div class="tag centered green">Get Started</div>
+      <h2 class="display">Ready to turn your<br/>brand into a <em>business?</em></h2>
+      <p style="margin-top:16px;">
+        Let's talk about your goals. Whether you're just starting or ready to scale — Kirckha builds the bridge between where you are and where you want to be.
+      </p>
+      <div class="book-btns">
+        <a href="https://www.cal.eu/kirckha" target="_blank" rel="noopener" class="btn btn-cream btn-primary-pulse">
+          Book a Discovery Call
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="btn btn-ghost">DM on Instagram</a>
+      </div>
+      <div class="book-trust">
+        <div class="trust-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Response within 24h
+        </div>
+        <div class="trust-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Free strategy session
+        </div>
+        <div class="trust-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          No commitment required
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="container">
+    <div class="section-hdr r" style="margin-bottom:48px;">
+      <div class="section-hdr-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-label">Contact</span>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-hdr-title" style="font-size:clamp(2.2rem,4vw,3.4rem);">We're always <em>open</em><br/>to a conversation.</h2>
+    </div>
+    <div class="contact-grid r d1">
+      <div class="contact-card">
+        <div class="contact-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#4f8460" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div>
+          <div class="contact-lbl">Email</div>
+          <div class="contact-val"><a href="mailto:Kirckha@kirchka.com">Kirckha@kirchka.com</a></div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#4f8460" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <div class="contact-lbl">Location</div>
+          <div class="contact-val">Copenhagen, Denmark<br/><span style="font-size:0.78rem;color:rgba(240,232,220,0.36);">Available worldwide — remote first</span></div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#4f8460" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <div class="contact-lbl">Response Time</div>
+          <div class="contact-val">Within 24 hours<br/><span style="font-size:0.78rem;color:rgba(240,232,220,0.36);">Mon – Fri, 9am – 6pm CET</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container">
+    <div class="foot-top">
+      <div class="foot-logo">
+        <svg class="foot-logo-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="80" height="80" rx="10" fill="rgba(240,232,220,0.06)"/>
+          <text x="40" y="54" text-anchor="middle" font-family="Georgia,serif" font-size="46" font-weight="700" fill="#F0E8DC" opacity="0.82">K</text>
+          <line x1="8" y1="64" x2="22" y2="64" stroke="#F0E8DC" stroke-width="0.7" opacity="0.28"/>
+          <text x="24" y="68" font-family="Arial,sans-serif" font-size="7" fill="#F0E8DC" letter-spacing="2" opacity="0.28">KIRCKHA</text>
+          <line x1="57" y1="64" x2="72" y2="64" stroke="#F0E8DC" stroke-width="0.7" opacity="0.28"/>
+        </svg>
+        <div class="foot-name">Kirckha</div>
+      </div>
+      <ul class="foot-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="foot-social">
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="soc-btn" aria-label="Instagram">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:rgba(240,232,220,0.45)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <p class="foot-copy">© 2026 Kirckha. All rights reserved.</p>
+      <p class="foot-copy">AI-Powered Creator Marketing · Copenhagen, Denmark</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-modal">
+    <div class="auth-modal-glow"></div>
+    <button class="auth-close" id="authClose">✕</button>
+    <div class="auth-top">
+      <div class="auth-logo">
+        <div class="auth-logo-mark">K</div>
+        <div class="auth-logo-name">Kirckha</div>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-panel="signin">Sign In</button>
+        <button class="auth-tab" data-panel="signup">Create Account</button>
+      </div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-panel active" id="panel-signin">
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input class="auth-input" type="email" id="si-email" placeholder="you@example.com" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <input class="auth-input" type="password" id="si-pass" placeholder="••••••••" />
+        </div>
+        <div class="auth-msg" id="si-msg"></div>
+        <button class="auth-submit" id="si-btn">Sign In</button>
+      </div>
+      <div class="auth-panel" id="panel-signup">
+        <div class="auth-field">
+          <label class="auth-label">Full Name</label>
+          <input class="auth-input" type="text" id="su-name" placeholder="Your name" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input class="auth-input" type="email" id="su-email" placeholder="you@example.com" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <input class="auth-input" type="password" id="su-pass" placeholder="Min. 6 characters" />
+        </div>
+        <div class="auth-msg" id="su-msg"></div>
+        <button class="auth-submit" id="su-btn">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LIVE CHAT ══ -->
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-head">
+      <div class="chat-head-avatar">K</div>
+      <div class="chat-head-info">
+        <div class="chat-head-name">Kirckha Support</div>
+        <div class="chat-head-status"><div class="chat-online"></div>Usually replies in minutes</div>
+      </div>
+    </div>
+
+    <!-- logged-in chat -->
+    <div id="chatMessages" class="chat-messages" style="display:none;"></div>
+
+    <!-- login prompt -->
+    <div class="chat-login-prompt" id="chatLoginPrompt">
+      <p>Log in to chat directly with the Kirckha team and get instant support.</p>
+      <button onclick="openAuth()">Log in to chat</button>
+    </div>
+
+    <div class="chat-input-row" id="chatInputRow" style="display:none;">
+      <textarea class="chat-input" id="chatInput" placeholder="Write a message…" rows="1"></textarea>
+      <button class="chat-send" id="chatSendBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F0E8DC" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <button class="chat-fab" id="chatFab" aria-label="Live chat">
+    <div class="chat-pulse"></div>
+    <div class="chat-badge" id="chatBadge">1</div>
+    <svg class="icon-chat" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(240,232,220,0.9)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <svg class="icon-close" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(240,232,220,0.9)" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
+<script>
+  /* ── Nav scroll ── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 60), {passive:true});
+
+  /* ── Mobile menu ── */
+  const burger  = document.getElementById('burger');
+  const mobMenu = document.getElementById('mobMenu');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    mobMenu.classList.toggle('open');
+    document.body.style.overflow = mobMenu.classList.contains('open') ? 'hidden' : '';
+  });
+  document.querySelectorAll('.ml').forEach(l => l.addEventListener('click', () => {
+    burger.classList.remove('open');
+    mobMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+
+  /* ── Scroll reveal ── */
+  const ro = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); ro.unobserve(e.target); } });
+  }, {threshold:0.08});
+  document.querySelectorAll('.r').forEach(el => ro.observe(el));
+
+  /* ── Counters ── */
+  const co = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.target;
+      const dur = 1600, step = target / (dur / 16); let cur = 0;
+      const t = setInterval(() => {
+        cur += step;
+        if (cur >= target) { cur = target; clearInterval(t); }
+        el.textContent = Math.floor(cur);
+      }, 16);
+      co.unobserve(el);
+    });
+  }, {threshold:0.5});
+  document.querySelectorAll('.counter').forEach(c => co.observe(c));
+
+  /* ══ AUTH SYSTEM ══ */
+  const DB_KEY   = 'kirckha_users';
+  const SESS_KEY = 'kirckha_session';
+  const MSG_KEY  = 'kirckha_msgs';
+  const getUsers   = () => JSON.parse(localStorage.getItem(DB_KEY)  || '{}');
+  const getSession = () => JSON.parse(localStorage.getItem(SESS_KEY) || 'null');
+  const getMsgs    = e  => JSON.parse(localStorage.getItem(MSG_KEY +'_'+ e) || '[]');
+  const saveMsgs   = (e,m) => localStorage.setItem(MSG_KEY +'_'+ e, JSON.stringify(m));
+
+  const authOverlay = document.getElementById('authOverlay');
+  const navLoginBtn = document.getElementById('navLoginBtn');
+  const navAvatar   = document.getElementById('navAvatar');
+  const profileDrop = document.getElementById('profileDrop');
+
+  function openAuth(panel) {
+    authOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (panel) switchAuthPanel(panel);
+  }
+  function closeAuth() { authOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  navLoginBtn.addEventListener('click', () => openAuth('signin'));
+  document.getElementById('authClose').addEventListener('click', closeAuth);
+  authOverlay.addEventListener('click', e => { if (e.target === authOverlay) closeAuth(); });
+
+  document.querySelectorAll('.auth-tab').forEach(t => t.addEventListener('click', () => switchAuthPanel(t.dataset.panel)));
+  function switchAuthPanel(name) {
+    document.querySelectorAll('.auth-tab,.auth-panel').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.auth-tab[data-panel="${name}"]`).classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
+  function showMsg(el, type, text) { el.textContent = text; el.className = 'auth-msg ' + type; }
+
+  document.getElementById('su-btn').addEventListener('click', () => {
+    const name  = document.getElementById('su-name').value.trim();
+    const email = document.getElementById('su-email').value.trim().toLowerCase();
+    const pass  = document.getElementById('su-pass').value;
+    const msg   = document.getElementById('su-msg');
+    msg.className = 'auth-msg';
+    if (!name||!email||!pass) { showMsg(msg,'error','Please fill in all fields.'); return; }
+    if (pass.length < 6)      { showMsg(msg,'error','Password must be at least 6 characters.'); return; }
+    const users = getUsers();
+    if (users[email]) { showMsg(msg,'error','An account with this email already exists.'); return; }
+    users[email] = { name, email, pass };
+    localStorage.setItem(DB_KEY, JSON.stringify(users));
+    showMsg(msg,'success','Account created! Signing you in…');
+    setTimeout(() => { doLogin({ name, email }); closeAuth(); }, 900);
+  });
+
+  document.getElementById('si-btn').addEventListener('click', () => {
+    const email = document.getElementById('si-email').value.trim().toLowerCase();
+    const pass  = document.getElementById('si-pass').value;
+    const msg   = document.getElementById('si-msg');
+    msg.className = 'auth-msg';
+    const users = getUsers();
+    if (!users[email] || users[email].pass !== pass) { showMsg(msg,'error','Incorrect email or password.'); return; }
+    showMsg(msg,'success','Welcome back!');
+    setTimeout(() => { doLogin(users[email]); closeAuth(); }, 700);
+  });
+
+  function doLogin(user) {
+    localStorage.setItem(SESS_KEY, JSON.stringify(user));
+    updateNavState(user);
+    updateChatState(user);
+  }
+  function doLogout() {
+    localStorage.removeItem(SESS_KEY);
+    updateNavState(null);
+    updateChatState(null);
+    profileDrop.classList.remove('open');
+  }
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+  function updateNavState(user) {
+    if (user) {
+      navLoginBtn.style.display = 'none';
+      navAvatar.classList.add('show');
+      const initials = user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('navAvatarInitials').textContent = initials;
+      document.getElementById('dropName').textContent  = user.name;
+      document.getElementById('dropEmail').textContent = user.email;
+    } else {
+      navLoginBtn.style.display = '';
+      navAvatar.classList.remove('show');
+    }
+  }
+  navAvatar.addEventListener('click', e => { e.stopPropagation(); profileDrop.classList.toggle('open'); });
+  document.addEventListener('click', () => profileDrop.classList.remove('open'));
+  document.getElementById('dropOpenChat').addEventListener('click', () => {
+    profileDrop.classList.remove('open');
+    chatWidget.classList.add('open');
+    document.getElementById('chatBadge').classList.add('hide');
+  });
+
+  /* ══ LIVE CHAT ══ */
+  const chatWidget = document.getElementById('chatWidget');
+  const chatFab    = document.getElementById('chatFab');
+  const chatMsgs   = document.getElementById('chatMessages');
+  const chatInput  = document.getElementById('chatInput');
+
+  chatFab.addEventListener('click', () => {
+    chatWidget.classList.toggle('open');
+    document.getElementById('chatBadge').classList.add('hide');
+  });
+
+  const botReplies = [
+    "Thanks for reaching out! We'll get back to you shortly 🙌",
+    "Great question — a team member will follow up within 24 hours.",
+    "Got it! We love hearing from creators. Talk soon 🌿",
+    "Noted! Someone from our team will be in touch very soon.",
+  ];
+
+  function appendBubble(who, text, time) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<div class="chat-bubble ${who}">${text}</div><div class="chat-time">${time}</div>`;
+    chatMsgs.appendChild(wrap);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  }
+
+  function loadChatMsgs(email) {
+    chatMsgs.innerHTML = '';
+    appendBubble('bot', '👋 Hey! How can we help you grow your brand today?', 'Kirckha');
+    getMsgs(email).forEach(m => appendBubble(m.who, m.text, m.time));
+  }
+
+  function updateChatState(user) {
+    const prompt   = document.getElementById('chatLoginPrompt');
+    const inputRow = document.getElementById('chatInputRow');
+    if (user) {
+      chatMsgs.style.display = 'flex';
+      prompt.style.display   = 'none';
+      inputRow.style.display = 'flex';
+      loadChatMsgs(user.email);
+    } else {
+      chatMsgs.style.display = 'none';
+      prompt.style.display   = 'block';
+      inputRow.style.display = 'none';
+    }
+  }
+
+  function sendChatMsg() {
+    const user = getSession(); if (!user) return;
+    const text = chatInput.value.trim(); if (!text) return;
+    const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const msgs = getMsgs(user.email);
+    msgs.push({ who:'user', text, time });
+    saveMsgs(user.email, msgs);
+    appendBubble('user', text, time);
+    chatInput.value = ''; chatInput.style.height = 'auto';
+    setTimeout(() => {
+      const reply = botReplies[Math.floor(Math.random()*botReplies.length)];
+      msgs.push({ who:'bot', text:reply, time:'Kirckha' });
+      saveMsgs(user.email, msgs);
+      appendBubble('bot', reply, 'Kirckha');
+    }, 1100);
+  }
+
+  document.getElementById('chatSendBtn').addEventListener('click', sendChatMsg);
+  chatInput.addEventListener('keydown', e => { if (e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChatMsg(); } });
+  chatInput.addEventListener('input', function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; });
+
+  /* restore session */
+  const sess = getSession();
+  if (sess) { updateNavState(sess); updateChatState(sess); }
+
+  /* ── Live visitor counter ── */
+  (function(){
+    const el = document.getElementById('liveCount');
+    if (!el) return;
+    let current = Math.floor(Math.random() * 18) + 12; // start 12–29
+    el.textContent = current;
+    setInterval(() => {
+      const delta = Math.random() < 0.5 ? 1 : -1;
+      current = Math.max(8, Math.min(60, current + delta));
+      el.textContent = current;
+    }, 3200);
+  })();
+
+  /* ── Active nav link ── */
+  const secs = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    secs.forEach(s => { if (scrollY >= s.offsetTop - 130) cur = s.id; });
+    navAs.forEach(a => {
+      const href = a.getAttribute('href');
+      a.style.color = href === '#' + cur ? 'var(--cream)' : '';
+    });
+  }, {passive:true});
+</script>
+
+<!-- ══ ADMIN STYLES ══ -->
+<style>
+  .adm-overlay {
+    position:fixed; inset:0; z-index:9000;
+    background:var(--bg);
+    display:none; flex-direction:column;
+    font-family:'Inter',sans-serif;
+  }
+  .adm-overlay.open { display:flex; }
+
+  /* ── Admin login screen ── */
+  .adm-login {
+    flex:1; display:flex; align-items:center; justify-content:center;
+  }
+  .adm-login-box {
+    width:100%; max-width:380px;
+    background:rgba(13,21,14,0.95);
+    border:1px solid var(--border);
+    border-radius:20px; padding:44px 36px;
+    text-align:center;
+  }
+  .adm-login-logo {
+    width:48px; height:48px; border-radius:14px;
+    background:var(--green); display:inline-flex;
+    align-items:center; justify-content:center;
+    font-family:'Playfair Display',serif;
+    font-size:1.4rem; color:var(--cream);
+    margin-bottom:20px;
+  }
+  .adm-login-title { font-size:1.1rem; font-weight:600; color:var(--cream); margin-bottom:4px; }
+  .adm-login-sub   { font-size:0.78rem; color:rgba(240,232,220,0.4); margin-bottom:28px; }
+  .adm-input {
+    width:100%; background:rgba(240,232,220,0.05);
+    border:1px solid var(--border); border-radius:10px;
+    padding:11px 14px; color:var(--cream); font-size:0.88rem;
+    font-family:'Inter',sans-serif; outline:none; margin-bottom:12px;
+    box-sizing:border-box; transition:border-color .2s;
+  }
+  .adm-input:focus { border-color:rgba(58,102,71,0.6); }
+  .adm-login-btn {
+    width:100%; background:var(--green); border:none; border-radius:10px;
+    padding:12px; color:var(--cream); font-size:0.88rem; font-weight:600;
+    cursor:pointer; transition:background .2s; margin-top:4px;
+    font-family:'Inter',sans-serif;
+  }
+  .adm-login-btn:hover { background:var(--green-l); }
+  .adm-login-err { font-size:0.78rem; color:#f87171; margin-top:10px; min-height:18px; }
+
+  /* ── Admin dashboard ── */
+  .adm-dash { flex:1; display:none; flex-direction:column; overflow:hidden; }
+  .adm-dash.show { display:flex; }
+
+  .adm-topbar {
+    height:56px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 28px; flex-shrink:0;
+  }
+  .adm-topbar-left { display:flex; align-items:center; gap:12px; }
+  .adm-topbar-logo {
+    width:32px; height:32px; border-radius:9px; background:var(--green);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display',serif; font-size:1rem; color:var(--cream);
+  }
+  .adm-topbar-title { font-size:0.88rem; font-weight:600; color:var(--cream); }
+  .adm-topbar-sub   { font-size:0.72rem; color:rgba(240,232,220,0.35); }
+  .adm-topbar-right { display:flex; align-items:center; gap:16px; }
+  .adm-exit-btn {
+    background:rgba(240,232,220,0.06); border:1px solid var(--border);
+    border-radius:8px; padding:6px 14px; color:rgba(240,232,220,0.6);
+    font-size:0.76rem; cursor:pointer; font-family:'Inter',sans-serif;
+    transition:background .2s;
+  }
+  .adm-exit-btn:hover { background:rgba(240,232,220,0.12); color:var(--cream); }
+
+  .adm-body { display:flex; flex:1; overflow:hidden; }
+
+  /* sidebar */
+  .adm-sidebar {
+    width:200px; flex-shrink:0; border-right:1px solid var(--border);
+    padding:20px 12px; display:flex; flex-direction:column; gap:4px;
+  }
+  .adm-nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 12px; border-radius:9px; cursor:pointer;
+    font-size:0.82rem; color:rgba(240,232,220,0.5);
+    transition:background .2s, color .2s; border:none; background:none;
+    font-family:'Inter',sans-serif; text-align:left; width:100%;
+  }
+  .adm-nav-item:hover { background:rgba(240,232,220,0.05); color:var(--cream); }
+  .adm-nav-item.active { background:rgba(58,102,71,0.18); color:var(--cream); }
+  .adm-nav-item svg { flex-shrink:0; opacity:.7; }
+  .adm-nav-item.active svg { opacity:1; }
+  .adm-badge {
+    margin-left:auto; background:var(--green); color:var(--cream);
+    font-size:0.65rem; font-weight:700; border-radius:20px;
+    padding:1px 7px; min-width:18px; text-align:center;
+  }
+
+  /* main content */
+  .adm-main { flex:1; overflow-y:auto; padding:32px 36px; }
+  .adm-tab { display:none; }
+  .adm-tab.active { display:block; }
+
+  .adm-section-title {
+    font-size:1.05rem; font-weight:700; color:var(--cream);
+    margin-bottom:20px; display:flex; align-items:center; gap:10px;
+  }
+  .adm-section-title span {
+    font-size:0.72rem; font-weight:500; color:rgba(240,232,220,0.4);
+    background:rgba(240,232,220,0.06); border-radius:20px; padding:2px 10px;
+  }
+
+  /* stat cards */
+  .adm-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:32px; }
+  .adm-stat {
+    background:rgba(13,21,14,0.80); border:1px solid var(--border);
+    border-radius:14px; padding:20px 22px;
+  }
+  .adm-stat-val { font-size:1.8rem; font-weight:700; color:var(--cream); line-height:1; }
+  .adm-stat-label { font-size:0.75rem; color:rgba(240,232,220,0.4); margin-top:6px; }
+
+  /* table */
+  .adm-table-wrap { background:rgba(13,21,14,0.80); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .adm-table { width:100%; border-collapse:collapse; }
+  .adm-table th {
+    text-align:left; font-size:0.7rem; font-weight:600; letter-spacing:0.1em;
+    text-transform:uppercase; color:rgba(240,232,220,0.35);
+    padding:12px 18px; border-bottom:1px solid var(--border);
+    background:rgba(240,232,220,0.02);
+  }
+  .adm-table td { padding:13px 18px; font-size:0.82rem; color:rgba(240,232,220,0.75); border-bottom:1px solid rgba(240,232,220,0.04); vertical-align:top; }
+  .adm-table tr:last-child td { border-bottom:none; }
+  .adm-table tr:hover td { background:rgba(58,102,71,0.06); }
+  .adm-empty { text-align:center; padding:48px 20px; color:rgba(240,232,220,0.25); font-size:0.85rem; }
+
+  /* chat thread */
+  .adm-thread { margin-bottom:16px; background:rgba(13,21,14,0.80); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .adm-thread-head {
+    padding:12px 18px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; user-select:none;
+  }
+  .adm-thread-email { font-size:0.82rem; font-weight:600; color:var(--cream); }
+  .adm-thread-count { font-size:0.72rem; color:rgba(240,232,220,0.35); }
+  .adm-thread-msgs { display:none; padding:14px 18px; display:flex; flex-direction:column; gap:8px; }
+  .adm-bubble { padding:8px 12px; border-radius:10px; font-size:0.80rem; max-width:75%; }
+  .adm-bubble.user { background:rgba(240,232,220,0.08); color:rgba(240,232,220,0.75); align-self:flex-start; }
+  .adm-bubble.bot  { background:rgba(58,102,71,0.25); color:rgba(240,232,220,0.85); align-self:flex-end; }
+  .adm-bubble-time { font-size:0.65rem; color:rgba(240,232,220,0.3); margin-top:3px; }
+
+  /* bookings */
+  .adm-cal-banner {
+    background:rgba(58,102,71,0.12); border:1px solid rgba(58,102,71,0.3);
+    border-radius:14px; padding:24px 28px;
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;
+  }
+  .adm-cal-banner-txt { font-size:0.88rem; color:rgba(240,232,220,0.7); }
+  .adm-cal-banner-txt strong { color:var(--cream); display:block; margin-bottom:4px; }
+  .adm-cal-link {
+    background:var(--green); color:var(--cream); border-radius:8px;
+    padding:10px 20px; font-size:0.82rem; font-weight:600;
+    text-decoration:none; white-space:nowrap; transition:background .2s;
+  }
+  .adm-cal-link:hover { background:var(--green-l); }
+
+  /* ── Sidebar groups ── */
+  .adm-sidebar { overflow-y:auto; }
+  .adm-sb-group {
+    font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+    color:rgba(240,232,220,0.25); padding:14px 12px 6px; margin-top:6px;
+  }
+  .adm-sb-group:first-child { margin-top:0; }
+
+  /* ── "Sample data" tag ── */
+  .adm-sample {
+    font-size:0.62rem !important; font-weight:600; letter-spacing:0.06em;
+    color:#e0b341 !important; background:rgba(224,179,65,0.12) !important;
+    border:1px solid rgba(224,179,65,0.3); border-radius:20px; padding:2px 9px !important;
+    text-transform:uppercase;
+  }
+
+  /* ── KPI grid ── */
+  .adm-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:26px; }
+  .adm-kpi {
+    background:rgba(13,21,14,0.80); border:1px solid var(--border);
+    border-radius:14px; padding:18px 20px;
+  }
+  .adm-kpi-label { font-size:0.72rem; color:rgba(240,232,220,0.4); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .adm-kpi-val { font-size:1.7rem; font-weight:700; color:var(--cream); line-height:1; }
+  .adm-kpi-trend { font-size:0.72rem; margin-top:7px; display:inline-flex; align-items:center; gap:3px; }
+  .adm-kpi-trend.up   { color:#4ade80; }
+  .adm-kpi-trend.down { color:#f87171; }
+  .adm-kpi-trend.flat { color:rgba(240,232,220,0.35); }
+
+  /* ── Generic card / grid ── */
+  .adm-card {
+    background:rgba(13,21,14,0.80); border:1px solid var(--border);
+    border-radius:14px; padding:22px 24px; margin-bottom:18px;
+  }
+  .adm-card-title { font-size:0.88rem; font-weight:600; color:var(--cream); margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .adm-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media(max-width:900px){ .adm-grid-2{ grid-template-columns:1fr; } .adm-kpis{ grid-template-columns:repeat(2,1fr);} }
+
+  /* ── Funnel ── */
+  .adm-funnel-row { margin-bottom:14px; }
+  .adm-funnel-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .adm-funnel-stage { font-size:0.82rem; color:var(--cream); }
+  .adm-funnel-meta { font-size:0.74rem; color:rgba(240,232,220,0.4); }
+  .adm-funnel-meta b { color:#4ade80; font-weight:600; }
+  .adm-funnel-track { height:30px; background:rgba(240,232,220,0.04); border-radius:7px; overflow:hidden; }
+  .adm-funnel-fill {
+    height:100%; border-radius:7px; display:flex; align-items:center; padding-left:12px;
+    background:linear-gradient(90deg,var(--green),var(--green-l));
+    font-size:0.74rem; font-weight:600; color:var(--cream); white-space:nowrap;
+    transition:width .8s var(--ease);
+  }
+
+  /* ── Mini bar chart ── */
+  .adm-bars { display:flex; align-items:flex-end; gap:8px; height:120px; padding-top:10px; }
+  .adm-bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .adm-bar { width:100%; max-width:34px; background:linear-gradient(180deg,var(--green-l),var(--green)); border-radius:5px 5px 0 0; transition:height .8s var(--ease); min-height:3px; }
+  .adm-bar-lbl { font-size:0.64rem; color:rgba(240,232,220,0.35); }
+  .adm-bar-val { font-size:0.64rem; color:rgba(240,232,220,0.55); font-weight:600; }
+
+  /* ── Progress / list rows ── */
+  .adm-lrow { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .adm-lrow:last-child { margin-bottom:0; }
+  .adm-lrow-lbl { font-size:0.8rem; color:rgba(240,232,220,0.75); width:160px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .adm-pbar { flex:1; height:8px; background:rgba(240,232,220,0.05); border-radius:6px; overflow:hidden; }
+  .adm-pbar-fill { height:100%; background:linear-gradient(90deg,var(--green),var(--green-l)); border-radius:6px; }
+  .adm-lrow-val { font-size:0.76rem; color:rgba(240,232,220,0.5); width:50px; text-align:right; flex-shrink:0; }
+
+  /* ── Pipeline (CRM kanban) ── */
+  .adm-pipe { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+  @media(max-width:1100px){ .adm-pipe{ grid-template-columns:repeat(2,1fr);} }
+  .adm-pipe-col { background:rgba(240,232,220,0.02); border:1px solid var(--border); border-radius:12px; padding:12px; }
+  .adm-pipe-head { font-size:0.72rem; font-weight:600; color:rgba(240,232,220,0.55); margin-bottom:10px; display:flex; justify-content:space-between; }
+  .adm-pipe-head span { color:rgba(240,232,220,0.3); }
+  .adm-pipe-card { background:rgba(13,21,14,0.9); border:1px solid var(--border); border-radius:9px; padding:10px 12px; margin-bottom:8px; }
+  .adm-pipe-card:last-child { margin-bottom:0; }
+  .adm-pipe-name { font-size:0.78rem; font-weight:600; color:var(--cream); }
+  .adm-pipe-co { font-size:0.7rem; color:rgba(240,232,220,0.4); margin-top:2px; }
+  .adm-pipe-val { font-size:0.72rem; color:#4ade80; font-weight:600; margin-top:6px; }
+
+  /* ── Status pills ── */
+  .adm-pill { font-size:0.68rem; font-weight:600; border-radius:20px; padding:3px 10px; display:inline-block; }
+  .adm-pill.green { background:rgba(74,222,128,0.14); color:#4ade80; }
+  .adm-pill.amber { background:rgba(224,179,65,0.14); color:#e0b341; }
+  .adm-pill.red   { background:rgba(248,113,113,0.14); color:#f87171; }
+  .adm-pill.gray  { background:rgba(240,232,220,0.07); color:rgba(240,232,220,0.45); }
+
+  /* ── Feedback / alert / list rows ── */
+  .adm-frow {
+    display:flex; align-items:center; gap:14px; padding:13px 0;
+    border-bottom:1px solid rgba(240,232,220,0.04);
+  }
+  .adm-frow:last-child { border-bottom:none; }
+  .adm-frow-icon { width:32px; height:32px; border-radius:9px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.9rem; }
+  .adm-frow-main { flex:1; min-width:0; }
+  .adm-frow-title { font-size:0.82rem; color:var(--cream); }
+  .adm-frow-sub { font-size:0.72rem; color:rgba(240,232,220,0.4); margin-top:2px; }
+  .adm-frow-time { font-size:0.7rem; color:rgba(240,232,220,0.3); white-space:nowrap; }
+
+  /* ── Settings ── */
+  .adm-set-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(240,232,220,0.04); }
+  .adm-set-row:last-child { border-bottom:none; }
+  .adm-set-lbl { font-size:0.84rem; color:var(--cream); }
+  .adm-set-desc { font-size:0.72rem; color:rgba(240,232,220,0.4); margin-top:3px; }
+  .adm-toggle { width:42px; height:24px; border-radius:20px; background:rgba(240,232,220,0.1); position:relative; cursor:pointer; flex-shrink:0; transition:background .2s; }
+  .adm-toggle::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:var(--cream); transition:left .2s; }
+  .adm-toggle.on { background:var(--green); }
+  .adm-toggle.on::after { left:21px; }
+
+  .adm-note {
+    font-size:0.74rem; color:rgba(240,232,220,0.4); line-height:1.6;
+    background:rgba(224,179,65,0.06); border:1px solid rgba(224,179,65,0.18);
+    border-radius:10px; padding:12px 16px; margin-bottom:20px;
+  }
+  .adm-note b { color:#e0b341; }
+</style>
+
+<!-- ══ ADMIN OVERLAY ══ -->
+<div class="adm-overlay" id="admOverlay">
+
+  <!-- Login screen -->
+  <div class="adm-login" id="admLogin">
+    <div class="adm-login-box">
+      <div class="adm-login-logo">K</div>
+      <div class="adm-login-title">Admin Access</div>
+      <div class="adm-login-sub">Kirckha internal dashboard</div>
+      <input class="adm-input" type="email" id="admEmail" placeholder="Admin email" />
+      <input class="adm-input" type="password" id="admPass" placeholder="Password" />
+      <button class="adm-login-btn" id="admLoginBtn">Sign In</button>
+      <div class="adm-login-err" id="admErr"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="adm-dash" id="admDash">
+    <div class="adm-topbar">
+      <div class="adm-topbar-left">
+        <div class="adm-topbar-logo">K</div>
+        <div>
+          <div class="adm-topbar-title">Kirckha Admin</div>
+          <div class="adm-topbar-sub">Internal Dashboard</div>
+        </div>
+      </div>
+      <div class="adm-topbar-right">
+        <button class="adm-exit-btn" id="admExitBtn">← Exit Admin</button>
+      </div>
+    </div>
+
+    <div class="adm-body">
+      <div class="adm-sidebar">
+        <div class="adm-sb-group">Overview</div>
+        <button class="adm-nav-item active" data-tab="overview">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          Overview
+        </button>
+
+        <div class="adm-sb-group">Acquisition</div>
+        <button class="adm-nav-item" data-tab="analytics">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M19 9l-5 5-4-4-3 3"/></svg>
+          Analytics
+        </button>
+        <button class="adm-nav-item" data-tab="leads">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          Leads / CRM
+        </button>
+
+        <div class="adm-sb-group">Customers</div>
+        <button class="adm-nav-item" data-tab="bookings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Bookings
+        </button>
+        <button class="adm-nav-item" data-tab="users">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Users
+          <span class="adm-badge" id="usersBadge">0</span>
+        </button>
+        <button class="adm-nav-item" data-tab="revenue">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Revenue
+        </button>
+
+        <div class="adm-sb-group">Engagement</div>
+        <button class="adm-nav-item" data-tab="chats">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Chats
+          <span class="adm-badge" id="chatsBadge">0</span>
+        </button>
+        <button class="adm-nav-item" data-tab="ai">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V4h6v3M9 13h.01M15 13h.01M9 17h6"/></svg>
+          AI Performance
+        </button>
+        <button class="adm-nav-item" data-tab="feedback">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18.5 22 12 17.5 5.5 22l2-8.5L2 9h7z"/></svg>
+          Feedback
+        </button>
+        <button class="adm-nav-item" data-tab="knowledge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          Knowledge
+        </button>
+
+        <div class="adm-sb-group">System</div>
+        <button class="adm-nav-item" data-tab="alerts">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Alerts
+          <span class="adm-badge" id="alertsBadge">0</span>
+        </button>
+        <button class="adm-nav-item" data-tab="settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-2.94.66 1.65 1.65 0 01-3.32 0 1.65 1.65 0 00-2.94-.66l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.2.61.78 1 1.42 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Settings
+        </button>
+      </div>
+
+      <div class="adm-main">
+
+        <!-- ═══ OVERVIEW ═══ -->
+        <div class="adm-tab active" id="tab-overview">
+          <div class="adm-section-title">Overview <span id="ovDate"></span></div>
+          <div class="adm-kpis">
+            <div class="adm-kpi">
+              <div class="adm-kpi-label">Visitors today</div>
+              <div class="adm-kpi-val" id="kpiVisToday">0</div>
+              <div class="adm-kpi-trend up" id="kpiVisTrend">live tracking</div>
+            </div>
+            <div class="adm-kpi">
+              <div class="adm-kpi-label">Registered users</div>
+              <div class="adm-kpi-val" id="kpiUsers">0</div>
+              <div class="adm-kpi-trend flat">all time</div>
+            </div>
+            <div class="adm-kpi">
+              <div class="adm-kpi-label">Chat conversations</div>
+              <div class="adm-kpi-val" id="kpiChats">0</div>
+              <div class="adm-kpi-trend flat">all time</div>
+            </div>
+            <div class="adm-kpi">
+              <div class="adm-kpi-label">Booking clicks</div>
+              <div class="adm-kpi-val" id="kpiBookings">0</div>
+              <div class="adm-kpi-trend up">→ Cal.eu</div>
+            </div>
+          </div>
+
+          <div class="adm-grid-2">
+            <div class="adm-card">
+              <div class="adm-card-title">Visitors — last 7 days <span class="adm-badge" style="background:rgba(74,222,128,0.14);color:#4ade80">LIVE</span></div>
+              <div class="adm-bars" id="ovBars"></div>
+            </div>
+            <div class="adm-card">
+              <div class="adm-card-title">Conversion funnel</div>
+              <div id="ovFunnel"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ ANALYTICS ═══ -->
+        <div class="adm-tab" id="tab-analytics">
+          <div class="adm-section-title">Analytics</div>
+          <div class="adm-note">Visitor counts &amp; funnel steps marked <b>LIVE</b> are tracked in the browser. Geography &amp; referral sources need a backend/analytics tool (PostHog, GA4) — shown as <b>Sample</b> until then.</div>
+
+          <div class="adm-kpis">
+            <div class="adm-kpi"><div class="adm-kpi-label">Visitors today <span class="adm-badge" style="background:rgba(74,222,128,0.14);color:#4ade80;padding:0 6px">LIVE</span></div><div class="adm-kpi-val" id="anToday">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">This week</div><div class="adm-kpi-val" id="anWeek">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Total visits</div><div class="adm-kpi-val" id="anTotal">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Returning %</div><div class="adm-kpi-val" id="anReturn">0%</div></div>
+          </div>
+
+          <div class="adm-card">
+            <div class="adm-card-title">Conversion funnel <span class="adm-badge" style="background:rgba(74,222,128,0.14);color:#4ade80">LIVE</span></div>
+            <div id="anFunnel"></div>
+          </div>
+
+          <div class="adm-grid-2">
+            <div class="adm-card">
+              <div class="adm-card-title">Top countries</div>
+              <div id="anCountries"></div>
+            </div>
+            <div class="adm-card">
+              <div class="adm-card-title">Top referral sources</div>
+              <div id="anReferrals"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ LEADS / CRM ═══ -->
+        <div class="adm-tab" id="tab-leads">
+          <div class="adm-section-title">Leads &amp; Pipeline</div>
+          <div class="adm-note">Registered users from your site are auto-added as <b>New Leads</b> with a real lead score. The later stages (Contacted → Won) need a backend to persist — they stay empty until then, no fake deals.</div>
+          <div class="adm-pipe" id="leadsPipe"></div>
+        </div>
+
+        <!-- ═══ BOOKINGS ═══ -->
+        <div class="adm-tab" id="tab-bookings">
+          <div class="adm-section-title">Bookings <span>via Cal.eu</span></div>
+          <div class="adm-cal-banner">
+            <div class="adm-cal-banner-txt">
+              <strong>Appointments are managed on Cal.eu</strong>
+              View, reschedule, and manage all discovery calls in your Cal.eu dashboard.
+            </div>
+            <a href="https://app.cal.com/kirckha" target="_blank" rel="noopener" class="adm-cal-link">Open Cal.eu →</a>
+          </div>
+          <div class="adm-stats" id="bookingStats">
+            <div class="adm-stat"><div class="adm-stat-val" id="bStatClicks">0</div><div class="adm-stat-label">Booking-button clicks <span class="adm-badge" style="background:rgba(74,222,128,0.14);color:#4ade80;padding:0 6px;font-size:.6rem">LIVE</span></div></div>
+            <div class="adm-stat"><div class="adm-stat-val" id="bStatUsers">—</div><div class="adm-stat-label">Registered users</div></div>
+            <div class="adm-stat"><div class="adm-stat-val" id="bStatChats">—</div><div class="adm-stat-label">Chat conversations</div></div>
+          </div>
+        </div>
+
+        <!-- ═══ USERS ═══ -->
+        <div class="adm-tab" id="tab-users">
+          <div class="adm-section-title">Registered Users <span id="usersCount">0</span></div>
+          <div class="adm-table-wrap">
+            <table class="adm-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Messages</th><th>Lead score</th><th>Status</th></tr></thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ REVENUE ═══ -->
+        <div class="adm-tab" id="tab-revenue">
+          <div class="adm-section-title">Revenue</div>
+          <div class="adm-note">Revenue happens offline after sales calls. These figures stay at <b>€0</b> until you connect a payment/CRM backend or enter deals manually — no placeholder numbers.</div>
+          <div class="adm-kpis">
+            <div class="adm-kpi"><div class="adm-kpi-label">MRR</div><div class="adm-kpi-val">€0</div><div class="adm-kpi-trend flat">no data</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Closed deals</div><div class="adm-kpi-val">0</div><div class="adm-kpi-trend flat">no data</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Pipeline value</div><div class="adm-kpi-val">€0</div><div class="adm-kpi-trend flat">no data</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Avg. deal value</div><div class="adm-kpi-val">€0</div><div class="adm-kpi-trend flat">no data</div></div>
+          </div>
+          <div class="adm-grid-2">
+            <div class="adm-card"><div class="adm-card-title">Revenue — last 7 months</div><div class="adm-bars" id="revBars"></div></div>
+            <div class="adm-card">
+              <div class="adm-card-title">Unit economics</div>
+              <div class="adm-lrow"><div class="adm-lrow-lbl">Cost per booking</div><div class="adm-pbar"><div class="adm-pbar-fill" style="width:0%"></div></div><div class="adm-lrow-val">€0</div></div>
+              <div class="adm-lrow"><div class="adm-lrow-lbl">Cost per client</div><div class="adm-pbar"><div class="adm-pbar-fill" style="width:0%"></div></div><div class="adm-lrow-val">€0</div></div>
+              <div class="adm-lrow"><div class="adm-lrow-lbl">Customer LTV</div><div class="adm-pbar"><div class="adm-pbar-fill" style="width:0%"></div></div><div class="adm-lrow-val">€0</div></div>
+              <div class="adm-lrow"><div class="adm-lrow-lbl">Revenue per lead</div><div class="adm-pbar"><div class="adm-pbar-fill" style="width:0%"></div></div><div class="adm-lrow-val">€0</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ CHATS ═══ -->
+        <div class="adm-tab" id="tab-chats">
+          <div class="adm-section-title">Chat Conversations <span id="chatsCount">0</span></div>
+          <div class="adm-kpis">
+            <div class="adm-kpi"><div class="adm-kpi-label">Conversations</div><div class="adm-kpi-val" id="chTotal">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Total messages</div><div class="adm-kpi-val" id="chMsgs">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Avg. length</div><div class="adm-kpi-val" id="chAvg">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Users who chatted</div><div class="adm-kpi-val" id="chUsers">0</div></div>
+          </div>
+          <div id="chatsBody"></div>
+        </div>
+
+        <!-- ═══ AI PERFORMANCE ═══ -->
+        <div class="adm-tab" id="tab-ai">
+          <div class="adm-section-title">AI Performance</div>
+          <div class="adm-note">The on-site chat currently uses scripted auto-replies (no LLM API), so there are no token costs to report. When you connect Claude/GPT, these panels populate with real usage &amp; spend.</div>
+          <div class="adm-kpis">
+            <div class="adm-kpi"><div class="adm-kpi-label">Tokens used</div><div class="adm-kpi-val">0</div><div class="adm-kpi-trend flat">no LLM connected</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Cost / conversation</div><div class="adm-kpi-val">€0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Escalation rate</div><div class="adm-kpi-val">0%</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Failed responses</div><div class="adm-kpi-val">0</div></div>
+          </div>
+          <div class="adm-card">
+            <div class="adm-card-title">Cost by model</div>
+            <div class="adm-empty">No LLM connected yet — model usage will appear here.</div>
+          </div>
+        </div>
+
+        <!-- ═══ FEEDBACK ═══ -->
+        <div class="adm-tab" id="tab-feedback">
+          <div class="adm-section-title">Feedback</div>
+          <div class="adm-note">Add 👍 / 👎 buttons to chat replies to start collecting real feedback (easy to wire on request). Until then these stay at zero.</div>
+          <div class="adm-kpis">
+            <div class="adm-kpi"><div class="adm-kpi-label">👍 Helpful</div><div class="adm-kpi-val">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">👎 Not helpful</div><div class="adm-kpi-val">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Responses rated</div><div class="adm-kpi-val">0</div></div>
+            <div class="adm-kpi"><div class="adm-kpi-label">Open issues</div><div class="adm-kpi-val">0</div></div>
+          </div>
+          <div class="adm-card">
+            <div class="adm-card-title">Most reported issues</div>
+            <div class="adm-empty">No feedback collected yet.</div>
+          </div>
+        </div>
+
+        <!-- ═══ KNOWLEDGE ═══ -->
+        <div class="adm-tab" id="tab-knowledge">
+          <div class="adm-section-title">Knowledge Insights</div>
+          <div class="adm-note">When the chat runs on an LLM, questions it can't answer get logged here — pure gold for deciding what content/FAQs to add. Empty until the AI is connected.</div>
+          <div class="adm-card">
+            <div class="adm-card-title">Top unanswered questions</div>
+            <div class="adm-empty">No unanswered questions logged yet.</div>
+          </div>
+        </div>
+
+        <!-- ═══ ALERTS ═══ -->
+        <div class="adm-tab" id="tab-alerts">
+          <div class="adm-section-title">Alerts <span id="alertsCount">0</span></div>
+          <div class="adm-card"><div id="alertsBody"></div></div>
+        </div>
+
+        <!-- ═══ SETTINGS ═══ -->
+        <div class="adm-tab" id="tab-settings">
+          <div class="adm-section-title">Settings</div>
+          <div class="adm-card">
+            <div class="adm-card-title">Notifications</div>
+            <div class="adm-set-row"><div><div class="adm-set-lbl">New booking alerts</div><div class="adm-set-desc">Notify when a discovery call is booked</div></div><div class="adm-toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="adm-set-row"><div><div class="adm-set-lbl">High-value lead alerts</div><div class="adm-set-desc">Ping when a lead scores above 80</div></div><div class="adm-toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="adm-set-row"><div><div class="adm-set-lbl">Chat-failure alerts</div><div class="adm-set-desc">Notify on AI errors or escalations</div></div><div class="adm-toggle" onclick="this.classList.toggle('on')"></div></div>
+            <div class="adm-set-row"><div><div class="adm-set-lbl">Cost-spike alerts</div><div class="adm-set-desc">Warn when AI spend exceeds threshold</div></div><div class="adm-toggle" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+          <div class="adm-card">
+            <div class="adm-card-title">Data</div>
+            <div class="adm-set-row"><div><div class="adm-set-lbl">Reset analytics</div><div class="adm-set-desc">Clear locally-tracked visitor &amp; funnel data</div></div><button class="adm-exit-btn" id="resetAnalyticsBtn">Reset</button></div>
+            <div class="adm-set-row"><div><div class="adm-set-lbl">Admin session</div><div class="adm-set-desc">You are signed in as Admin@kirckha.com</div></div><span class="adm-pill green">Active</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ══ ADMIN ══ */
+  const ADMIN_EMAIL = 'admin@kirckha.com';
+  const ADMIN_PASS  = 'yjh64kwhadmin';
+  const ADM_SESS    = 'kirckha_adm';
+
+  const admOverlay  = document.getElementById('admOverlay');
+  const admLogin    = document.getElementById('admLogin');
+  const admDash     = document.getElementById('admDash');
+
+  function openAdmin() {
+    admOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (localStorage.getItem(ADM_SESS) === '1') showAdminDash();
+  }
+  function closeAdmin() {
+    admOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    history.replaceState(null,'',location.pathname);
+  }
+
+  document.getElementById('admLoginBtn').addEventListener('click', () => {
+    const e = document.getElementById('admEmail').value.trim().toLowerCase();
+    const p = document.getElementById('admPass').value;
+    const err = document.getElementById('admErr');
+    if (e !== ADMIN_EMAIL || p !== ADMIN_PASS) {
+      err.textContent = 'Incorrect email or password.'; return;
+    }
+    localStorage.setItem(ADM_SESS, '1');
+    showAdminDash();
+  });
+  document.getElementById('admEmail').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('admLoginBtn').click(); });
+  document.getElementById('admPass').addEventListener('keydown',  e => { if(e.key==='Enter') document.getElementById('admLoginBtn').click(); });
+
+  document.getElementById('admExitBtn').addEventListener('click', () => {
+    localStorage.removeItem(ADM_SESS);
+    admDash.classList.remove('show');
+    admLogin.style.display = 'flex';
+    closeAdmin();
+  });
+
+  function showAdminDash() {
+    admLogin.style.display = 'none';
+    admDash.classList.add('show');
+    loadAdminData();
+  }
+
+  /* tab switching */
+  document.querySelectorAll('.adm-nav-item[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.adm-nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ── Real first-party analytics tracking ── */
+  const ANALYTICS_KEY = 'kirckha_analytics';
+  const VISITOR_KEY   = 'kirckha_visitor';
+  const todayKey = () => new Date().toISOString().slice(0,10);
+  function getAnalytics() {
+    return JSON.parse(localStorage.getItem(ANALYTICS_KEY) || '{"total":0,"returning":0,"daily":{},"funnel":{"chatStarted":0,"bookingClicked":0}}');
+  }
+  function saveAnalytics(a){ localStorage.setItem(ANALYTICS_KEY, JSON.stringify(a)); }
+  function trackEvent(name){
+    const a = getAnalytics();
+    if (a.funnel[name] !== undefined) { a.funnel[name]++; saveAnalytics(a); }
+  }
+  (function trackVisit(){
+    const a = getAnalytics();
+    a.total++;
+    const t = todayKey();
+    a.daily[t] = (a.daily[t]||0) + 1;
+    if (localStorage.getItem(VISITOR_KEY)) a.returning++;
+    else localStorage.setItem(VISITOR_KEY, t);
+    saveAnalytics(a);
+  })();
+  /* hook funnel events */
+  document.querySelectorAll('a[href*="cal.eu"]').forEach(el => el.addEventListener('click', () => trackEvent('bookingClicked')));
+  (function(){
+    let chatTracked = false;
+    const fab = document.getElementById('chatFab');
+    if (fab) fab.addEventListener('click', () => { if(!chatTracked){ trackEvent('chatStarted'); chatTracked = true; } });
+  })();
+
+  /* ── Render helpers ── */
+  function renderBars(id, data){
+    const max = Math.max(...data.map(d=>d.val), 1);
+    document.getElementById(id).innerHTML = data.map(d => `
+      <div class="adm-bar-col">
+        <div class="adm-bar-val">${d.val}</div>
+        <div class="adm-bar" style="height:${Math.max(3,(d.val/max)*100)}%"></div>
+        <div class="adm-bar-lbl">${d.lbl}</div>
+      </div>`).join('');
+  }
+  function renderFunnel(id, stages){
+    const top = stages[0].count || 1;
+    document.getElementById(id).innerHTML = stages.map((s,i) => {
+      const pct = Math.round((s.count/top)*100);
+      const conv = i===0 ? '' : `<b>${stages[i-1].count ? Math.round((s.count/stages[i-1].count)*100) : 0}%</b> from prev`;
+      const tag = s.sample ? ' <span class="adm-sample">Sample</span>' : '';
+      return `<div class="adm-funnel-row">
+        <div class="adm-funnel-top">
+          <span class="adm-funnel-stage">${s.stage}${tag}</span>
+          <span class="adm-funnel-meta">${s.count} ${conv?'· '+conv:''}</span>
+        </div>
+        <div class="adm-funnel-track"><div class="adm-funnel-fill" style="width:${Math.max(pct,6)}%">${s.count}</div></div>
+      </div>`;
+    }).join('');
+  }
+  function renderList(id, rows){
+    document.getElementById(id).innerHTML = rows.map(r => `
+      <div class="adm-lrow">
+        <div class="adm-lrow-lbl">${r.lbl}</div>
+        <div class="adm-pbar"><div class="adm-pbar-fill" style="width:${r.pct}%"></div></div>
+        <div class="adm-lrow-val">${r.val}</div>
+      </div>`).join('');
+  }
+  function leadScore(u){
+    let s = 30;
+    const m = getMsgs(u.email).length;
+    s += Math.min(m*8, 40);
+    if (u.email && !/(gmail|hotmail|outlook|yahoo|icloud)\./i.test(u.email)) s += 20; // business email
+    return Math.min(s, 99);
+  }
+
+  function loadAdminData() {
+    const users = getUsers();
+    const userList = Object.values(users);
+    const userCount = userList.length;
+    const a = getAnalytics();
+
+    /* chat data */
+    const chatThreads = [];
+    let totalMsgs = 0;
+    userList.forEach(u => {
+      const msgs = getMsgs(u.email);
+      if (msgs.length) { chatThreads.push({ email:u.email, name:u.name, msgs }); totalMsgs += msgs.length; }
+    });
+    const avgLen = chatThreads.length ? Math.round(totalMsgs/chatThreads.length) : 0;
+
+    /* 7-day visitor series */
+    const days = [];
+    for (let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i);
+      const k=d.toISOString().slice(0,10);
+      days.push({ lbl:['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()], val:a.daily[k]||0 }); }
+    const weekTotal = days.reduce((s,d)=>s+d.val,0);
+    const returnPct = a.total ? Math.round((a.returning/a.total)*100) : 0;
+
+    /* funnel stages (real where possible) */
+    const funnel = [
+      { stage:'Visitors',       count:a.total },
+      { stage:'Started chat',   count:a.funnel.chatStarted },
+      { stage:'Registered',     count:userCount },
+      { stage:'Booked call',    count:a.funnel.bookingClicked },
+      { stage:'Became client',  count:0 },
+    ];
+
+    /* ── badges ── */
+    document.getElementById('usersBadge').textContent = userCount;
+    document.getElementById('chatsBadge').textContent = chatThreads.length;
+    document.getElementById('usersCount').textContent = userCount;
+    document.getElementById('chatsCount').textContent = chatThreads.length;
+
+    /* ── Overview ── */
+    document.getElementById('ovDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    document.getElementById('kpiVisToday').textContent = a.daily[todayKey()]||0;
+    document.getElementById('kpiUsers').textContent    = userCount;
+    document.getElementById('kpiChats').textContent    = chatThreads.length;
+    document.getElementById('kpiBookings').textContent = a.funnel.bookingClicked;
+    renderBars('ovBars', days);
+    renderFunnel('ovFunnel', funnel);
+
+    /* ── Analytics ── */
+    document.getElementById('anToday').textContent  = a.daily[todayKey()]||0;
+    document.getElementById('anWeek').textContent   = weekTotal;
+    document.getElementById('anTotal').textContent  = a.total;
+    document.getElementById('anReturn').textContent = returnPct + '%';
+    renderFunnel('anFunnel', funnel);
+    document.getElementById('anCountries').innerHTML = '<div class="adm-empty">Needs an analytics backend (PostHog / GA4).</div>';
+    document.getElementById('anReferrals').innerHTML = '<div class="adm-empty">Needs an analytics backend (PostHog / GA4).</div>';
+
+    /* ── Bookings ── */
+    document.getElementById('bStatClicks').textContent = a.funnel.bookingClicked;
+    document.getElementById('bStatUsers').textContent  = userCount;
+    document.getElementById('bStatChats').textContent  = chatThreads.length;
+
+    /* ── Users table (enriched) ── */
+    const ub = document.getElementById('usersBody');
+    if (!userList.length) {
+      ub.innerHTML = '<tr><td colspan="5" class="adm-empty">No registered users yet.</td></tr>';
+    } else {
+      ub.innerHTML = userList.map(u => {
+        const m = getMsgs(u.email).length;
+        const score = leadScore(u);
+        const pill = score>=70?'green':score>=45?'amber':'gray';
+        const status = m>0 ? '<span class="adm-pill green">Engaged</span>' : '<span class="adm-pill gray">New</span>';
+        return `<tr>
+          <td>${u.name}</td>
+          <td style="color:rgba(240,232,220,0.45)">${u.email}</td>
+          <td>${m}</td>
+          <td><span class="adm-pill ${pill}">${score}</span></td>
+          <td>${status}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    /* ── Revenue (zeroed until backend) ── */
+    renderBars('revBars', [
+      {lbl:'Dec',val:0},{lbl:'Jan',val:0},{lbl:'Feb',val:0},{lbl:'Mar',val:0},
+      {lbl:'Apr',val:0},{lbl:'May',val:0},{lbl:'Jun',val:0}
+    ]);
+
+    /* ── Chats ── */
+    document.getElementById('chTotal').textContent = chatThreads.length;
+    document.getElementById('chMsgs').textContent  = totalMsgs;
+    document.getElementById('chAvg').textContent   = avgLen;
+    document.getElementById('chUsers').textContent = chatThreads.length;
+    const cb = document.getElementById('chatsBody');
+    if (!chatThreads.length) {
+      cb.innerHTML = '<div class="adm-empty">No chat conversations yet.</div>';
+    } else {
+      cb.innerHTML = chatThreads.map(t => `
+        <div class="adm-thread">
+          <div class="adm-thread-head" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='flex'?'none':'flex'">
+            <span class="adm-thread-email">${t.name} <span style="color:rgba(240,232,220,0.35);font-weight:400">&lt;${t.email}&gt;</span></span>
+            <span class="adm-thread-count">${t.msgs.length} messages ▾</span>
+          </div>
+          <div class="adm-thread-msgs" style="display:flex">
+            ${t.msgs.map(m => `
+              <div style="display:flex;flex-direction:column;align-items:${m.who==='user'?'flex-start':'flex-end'}">
+                <div class="adm-bubble ${m.who}">${m.text}</div>
+                <div class="adm-bubble-time">${m.time}</div>
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    /* ── Leads / CRM pipeline ── */
+    const newLeadCards = userList.length
+      ? userList.map(u => `<div class="adm-pipe-card"><div class="adm-pipe-name">${u.name}</div><div class="adm-pipe-co">${u.email}</div><div class="adm-pipe-val">Score ${leadScore(u)}</div></div>`).join('')
+      : '<div style="font-size:.72rem;color:rgba(240,232,220,0.25);padding:8px">No leads yet</div>';
+    const emptyCol = '<div style="font-size:.72rem;color:rgba(240,232,220,0.2);padding:8px">—</div>';
+    document.getElementById('leadsPipe').innerHTML = `
+      <div class="adm-pipe-col"><div class="adm-pipe-head">New Lead <span>${userList.length}</span></div>${newLeadCards}</div>
+      <div class="adm-pipe-col"><div class="adm-pipe-head">Contacted <span>0</span></div>${emptyCol}</div>
+      <div class="adm-pipe-col"><div class="adm-pipe-head">Qualified <span>0</span></div>${emptyCol}</div>
+      <div class="adm-pipe-col"><div class="adm-pipe-head">Proposal <span>0</span></div>${emptyCol}</div>
+      <div class="adm-pipe-col"><div class="adm-pipe-head">Won <span>0</span></div>${emptyCol}</div>`;
+
+    /* ── Alerts (real + sample) ── */
+    const alerts = [];
+    userList.slice(-3).reverse().forEach(u => alerts.push({icon:'👤', bg:'rgba(58,102,71,0.2)', title:`New user registered`, sub:`${u.name} · ${u.email}`, time:'recent'}));
+    chatThreads.slice(-2).reverse().forEach(t => alerts.push({icon:'💬', bg:'rgba(74,222,128,0.15)', title:`New chat conversation`, sub:`${t.name} sent ${t.msgs.length} messages`, time:'recent'}));
+    if (a.funnel.bookingClicked>0) alerts.push({icon:'📅', bg:'rgba(224,179,65,0.15)', title:`Discovery-call button clicked`, sub:`${a.funnel.bookingClicked} total clicks → Cal.eu`, time:'today'});
+    if (!alerts.length) alerts.push({icon:'✨', bg:'rgba(240,232,220,0.06)', title:'No activity yet', sub:'Alerts will appear as users register, chat, and book', time:''});
+    document.getElementById('alertsBadge').textContent = alerts.length;
+    document.getElementById('alertsCount').textContent = alerts.length;
+    document.getElementById('alertsBody').innerHTML = alerts.map(al => `
+      <div class="adm-frow">
+        <div class="adm-frow-icon" style="background:${al.bg}">${al.icon}</div>
+        <div class="adm-frow-main"><div class="adm-frow-title">${al.title}</div><div class="adm-frow-sub">${al.sub}</div></div>
+        <div class="adm-frow-time">${al.time}</div>
+      </div>`).join('');
+  }
+
+  /* reset analytics */
+  document.getElementById('resetAnalyticsBtn').addEventListener('click', () => {
+    if (confirm('Clear all locally-tracked analytics data?')) {
+      localStorage.removeItem(ANALYTICS_KEY); localStorage.removeItem(VISITOR_KEY);
+      loadAdminData();
+    }
+  });
+
+  /* trigger: navigate to #admin */
+  function checkAdminRoute() {
+    if (location.hash === '#admin') openAdmin();
+  }
+  window.addEventListener('hashchange', checkAdminRoute);
+  checkAdminRoute();
+</script>
+</body>
+</html>
